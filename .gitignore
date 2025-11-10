@@ -1,0 +1,4 @@
+# git ignore file for my current project
+/node_modules
+/output
+.env

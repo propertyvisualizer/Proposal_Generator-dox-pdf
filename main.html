@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Angebot Nr. {{offerNumber}} - Visualisierungsangebot</title>
+  <style>
+    /* ========== RESET ========== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    /* ========== PAGE STYLE (Word Document Feel) ========== */
+    body {
+      font-family: "Calibri", "Arial", sans-serif;
+      font-size: 11pt; /* Standard business document size */
+      line-height: 1.5;
+      background: #f9f9f9;
+      color: #000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 20px;
+    }
+
+    .page {
+      width: 793px; /* A4 width: 8.27" at 96dpi */
+      min-height: 1122px; /* A4 height: 11.69" at 96dpi */
+      max-width: 793px;
+      padding: 96px; /* Exactly 1 inch on all sides at 96dpi */
+      margin-bottom: 40px;
+      background: white;
+      box-shadow: 0 0 8px rgba(0, 0, 0, 0.15);
+      border: 1px solid #dcdcdc;
+      display: flex;
+      flex-direction: column;
+      page-break-after: always;
+      position: relative;
+      box-sizing: border-box;
+    }
+
+    .page:last-child {
+      margin-bottom: 0;
+    }
+
+    .page-content {
+      flex: 1;
+      padding-bottom: 100px; /* Space for footer */
+    }
+
+    /* ========== PAGE ONE STYLES ========== */
+    .exposeprofi-logo {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 24px;
+    }
+
+    .exposeprofi-logo img {
+      max-width: 320px;
+      height: auto;
+    }
+
+    .header-left {
+      font-size: 11pt;
+      color: #022e64;
+      margin-bottom: 8px;
+    }
+
+    .recipient-address {
+      margin-top: 16px;
+      margin-bottom: 24px;
+      line-height: 1.4;
+      font-size: 11pt;
+    }
+
+    .date-offer {
+      margin-bottom: 32px;
+      text-align: right;
+      font-size: 11pt;
+    }
+
+    .offer-number-section {
+      font-weight: bold;
+      font-size: 16pt;
+      margin-bottom: 16px;
+    }
+
+    .intro-text {
+      text-align: justify;
+      margin-bottom: 12px;
+      font-size: 11pt;
+    }
+
+    .benefits-list {
+      margin: 28px 0;
+      font-size: 12pt;
+      line-height: 1.6;
+    }
+
+    .benefits-list > div {
+      margin-bottom: 8px;
+      text-align: justify;
+    }
+
+    .benefits-list strong {
+      font-weight: bold;
+    }
+
+    /* ========== PAGE TWO+ STYLES ========== */
+    .header-text {
+      margin-bottom: 16px;
+      font-size: 10pt;
+      line-height: 1.4;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 0;
+      font-size: 9pt; /* Slightly smaller for better fit */
+      page-break-inside: auto; /* Allow table to break across pages */
+    }
+
+    tr {
+      page-break-inside: avoid; /* Try to keep rows together */
+      page-break-after: auto;
+    }
+
+    thead {
+      display: table-header-group; /* Repeat header on each page */
+    }
+
+    tbody {
+      display: table-row-group;
+    }
+
+    th, td {
+      border: 1px solid #333;
+      padding: 5px 6px;
+      text-align: left;
+      vertical-align: top;
+      line-height: 1.3;
+    }
+
+    th {
+      background-color: #f0f0f0;
+      font-weight: bold;
+      text-align: center;
+      font-size: 9pt;
+    }
+
+    .no-header thead {
+      display: none;
+    }
+
+    .no-header {
+      margin-top: -1px;
+    }
+
+    .col-number {
+      width: 8%;
+    }
+
+    .col-description {
+      width: 28%;
+    }
+
+    .col-details {
+      width: 54%;
+    }
+
+    .col-price {
+      width: 10%;
+      text-align: center;
+    }
+
+    ul {
+      margin: 4px 0 4px 14px;
+      padding-left: 0;
+    }
+
+    li {
+      margin-bottom: 2px;
+      line-height: 1.3;
+    }
+
+    .dynamic-field {
+      background-color: transparent;
+      border: none;
+      font-family: Calibri, Arial, sans-serif;
+      font-size: 9pt;
+      padding: 0;
+      cursor: text;
+    }
+
+    .reference {
+      color: #0066cc;
+      text-decoration: none;
+    }
+
+    .section-title {
+      font-weight: bold;
+      margin-top: 16px;
+      margin-bottom: 8px;
+      font-size: 11pt;
+    }
+
+    .pricing-summary {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 16px;
+    }
+
+    .summary-row {
+      border: 1px solid #333;
+    }
+
+    .summary-label {
+      padding: 6px 8px;
+      width: 70%;
+      border: 1px solid #333;
+    }
+
+    .summary-value {
+      padding: 6px 8px;
+      width: 30%;
+      text-align: center;
+      border: 1px solid #333;
+    }
+
+    .footnote {
+      font-size: 8.5pt;
+      margin-top: 16px;
+      line-height: 1.4;
+    }
+
+    /* ========== FOOTER ========== */
+    .page-footer {
+      position: absolute;
+      bottom: 48px; /* 0.5" from bottom at 96dpi */
+      left: 96px; /* 1" margin */
+      right: 96px; /* 1" margin */
+      padding-top: 8px;
+      border-top: none; /* No border line */
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      font-size: 7pt;
+      line-height: 1.2;
+      background: white;
+    }
+
+    .footer-column {
+      flex: 1;
+      margin-right: 12px;
+      min-width: 0;
+    }
+
+    .footer-column:last-child {
+      margin-right: 0;
+    }
+
+    .footer-column p {
+      margin: 1px 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-size: 7pt;
+    }
+
+    .company-name {
+      font-weight: bold;
+      font-size: 8pt;
+      margin-bottom: 3px;
+    }
+
+    /* ========== PRINT ========== */
+    @media print {
+      body {
+        background: white;
+        padding: 0;
+      }
+      .page {
+        box-shadow: none;
+        border: none;
+        width: 8.27in; /* Exact A4 width */
+        height: 11.69in; /* Exact A4 height */
+        padding: 1in; /* Exact 1 inch margins */
+        margin: 0;
+        page-break-after: always;
+        box-sizing: border-box;
+      }
+      .page:last-child {
+        page-break-after: avoid;
+      }
+      .page-footer {
+        position: absolute;
+        bottom: 0.5in; /* 0.5 inch from bottom */
+        left: 1in;
+        right: 1in;
+      }
+      table {
+        page-break-inside: auto;
+      }
+      tr {
+        page-break-inside: avoid;
+        page-break-after: auto;
+      }
+      thead {
+        display: table-header-group;
+      }
+    }
+    
+    @page {
+      size: 8.27in 11.69in; /* Exact A4 dimensions */
+      margin: 0;
+    }
+  </style>
+</head>
+<body>
+  <!-- ========================================
+       PAGE 0: COVER / INTRODUCTION
+       ======================================== -->
+  <div class="page">
+    <div class="page-content">
+      <!-- Header -->
+      <div class="exposeprofi-logo">
+        <img src="6363f6e55943431f0f248941_logo exposeprofi blau-p-500.png" alt="ExposeProfi.de">
+      </div>
+      <div class="header-left">
+        ExposeProfi.de | EPCS GmbH | Bruder-Klaus-Straße 3a | 78467 Konstanz
+      </div>
+
+      <!-- Recipient Address -->
+      <div class="recipient-address">
+        <div class="address-block">
+          <span class="company-name">{{companyName}}</span><br>
+          <span>{{street}}</span><br>
+          <span>{{postalCode}} {{city}}</span><br>
+          Deutschland
+        </div>
+      </div>
+
+      <!-- Date and Offer Number -->
+      <div class="date-offer">
+        <div>{{date}}</div>
+      </div>
+
+      <!-- Introduction -->
+      <div class="offer-number-section">
+        Angebot Nr. <span>2025-{{MM}}-{{DD}}-1</span>
+      </div>
+      <div class="intro-text">
+        Vielen Dank für Ihre Anfrage und Ihr damit verbundenes Interesse an einer Zusammenarbeit.
+      </div>
+
+      <div class="intro-text">
+        <strong>Die Vorteile zusammengefasst, die Sie erwarten können:</strong>
+      </div>
+
+      <!-- Benefits List -->
+      <div class="benefits-list">
+        <div><strong>1. Fotorealismus:</strong> Wir erstellen ausschließlich emotionale 3D-Visualisierungen der höchsten Qualitätsstufe.</div>
+        <div><strong>2. Persönliche & individuelle Betreuung:</strong> Sie erhalten bei jedem Projekt die Unterstützung von einem persönlichen Ansprechpartner, der die Visualisierungen individuell für Sie erstellt und immer per Telefon oder Email erreichbar ist.</div>
+        <div><strong>3. Effiziente Prozesse & schnelle Lieferzeit:</strong> Wie Sie sehen, melden wir uns innerhalb von 24h mit einem Angebot bei Ihnen. Ihr Projekt verläuft ab Start ebenso reibungslos und Sie erhalten die Visualisierungen schnellstmöglich.</div>
+        <div><strong>4. Korrekturschleifen:</strong> Falls Sie Änderungswünsche haben, bieten wir Ihnen ein eigenes Tool, mit dem Sie direkt in der Visualisierung Kommentare hinterlassen können. Das spart Zeit und Missverständnisse.</div>
+        <div><strong>5. Preiswert:</strong> Aufgrund effizienter Prozesse bieten wir günstigere Preise bei gleicher Qualität und besserer Betreuung.</div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="page-footer">
+      <div class="footer-column">
+        <p class="company-name">ExposeProfi.de</p>
+        <p>EPCS GmbH</p>
+        <p>GF: Christopher Helm</p>
+        <p>Bruder-Klaus-Str. 3a, 78467 Konstanz</p>
+        <p>HRB 725172, Amtsgericht Freiburg</p>
+        <p>St.-Nr: 0908011277</p>
+        <p>USt-ID: DE347265281</p>
+      </div>
+
+      <div class="footer-column">
+        <p class="company-name">Bankverbindung</p>
+        <p>Qonto (Banque de France)</p>
+        <p>IBAN DE62100101239488471916</p>
+      </div>
+
+      <div class="footer-column">
+        <p>Email: christopher.helm@exposeprofi.de</p>
+        <p>Web: www.exposeprofi.de</p>
+        <p>Tel: +49-7531-1227491</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================
+       PAGE 1: SERVICES TABLE
+       ======================================== -->
+  <div class="page">
+    <div class="page-content">
+      <!-- Header -->
+      <div class="header-text">
+        <strong>Basierend auf den zugesandten Unterlagen unterbreiten wir Ihnen folgendes Angebot:</strong>
+      </div>
+
+      <!-- UNIFIED TABLE: PAGE 1 SERVICES -->
+      <table>
+        <thead>
+          <tr>
+            <th class="col-number">Anzahl</th>
+            <th class="col-description">Bezeichnung</th>
+            <th class="col-details">Beschreibung</th>
+            <th class="col-price">Stückpreis netto</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- SECTION 1: 3D-AUSSENVISUALISIERUNG -->
+          <tr>
+            <td rowspan="6" class="col-number"><input type="text" class="dynamic-field" value="XXX" style="width: 100%;"></td>
+            <td class="col-description">
+              <strong>3D-Außenvisualisierung Bodenperspektive</strong><br>
+              (<input type="text" class="dynamic-field" value="Projekt mit XX Wohneinheiten" style="width: 100%;">)
+            </td>
+            <td class="col-details">
+              <ul>
+                <li>Geliefert werden <input type="text" class="dynamic-field" value="XXX" style="width: 50px;"> gerenderte Außenansichten des Objektes <input type="text" class="dynamic-field" value="XXX" style="width: 50px;"> aus den folgenden Bodenperspektiven (siehe rote Pfeile):</li>
+                <li><input type="text" class="dynamic-field" value="XXX" style="width: 100%;"></li>
+                <li>Fotorealistische Qualität</li>
+                <li>Auf Wunsch eingefügt in von Ihnen zu liefernde Drohnenfotos oder schematische Modellierung der Umgebung</li>
+                <li>Inkl. 1 Revisionsrunde<sup>(1)</sup></li>
+                <li>Format: 2.500 x 1.500 px (300 DPI)</li>
+                <li>Referenzen: <a href="#" class="reference">KLICK</a></li>
+              </ul>
+            </td>
+            <td class="col-price"><input type="text" class="dynamic-field" value="20 €" style="width: 100%;"></td>
+          </tr>
+          <tr>
+            <td class="col-description"><strong>Preisauftelung:</strong></td>
+            <td class="col-details"></td>
+            <td class="col-price"></td>
+          </tr>
+          <tr>
+            <td class="col-description">1 Ansicht Netto:</td>
+            <td class="col-details"><input type="text" class="dynamic-field" value="20,00 €" style="width: 100%;"></td>
+            <td class="col-price"></td>
+          </tr>
+          <tr>
+            <td class="col-description">2 Ansichten: Netto pro Ansicht:</td>
+            <td class="col-details"><input type="text" class="dynamic-field" value="18,00 €" style="width: 100%;"></td>
+            <td class="col-price"></td>
+          </tr>
+          <tr>
+            <td class="col-description">3 Ansichten: Netto pro Ansicht:</td>
+            <td class="col-details"><input type="text" class="dynamic-field" value="16,00 €" style="width: 100%;"></td>
+            <td class="col-price"></td>
+          </tr>
+          <tr>
+            <td class="col-description">4 Ansichten: Netto pro Ansicht:</td>
+            <td class="col-details"><input type="text" class="dynamic-field" value="14,00 €" style="width: 100%;"></td>
+            <td class="col-price"></td>
+          </tr>
+          <tr>
+            <td class="col-number"></td>
+            <td class="col-description">5 Ansichten: Netto pro Ansicht:</td>
+            <td class="col-details"><input type="text" class="dynamic-field" value="12,00 €" style="width: 100%;"></td>
+            <td class="col-price"></td>
+          </tr>
+
+          <!-- SECTION 2: 3D-AUSSENVISUALISIERUNG VOGELPERSPEKTIVE -->
+          <tr>
+            <td rowspan="2" class="col-number"><input type="text" class="dynamic-field" value="XXX" style="width: 100%;"></td>
+            <td class="col-description">
+              <strong>3D-Außenvisualisierung Vogelperspektive</strong><br>
+              (<input type="text" class="dynamic-field" value="Projekt mit XX Wohneinheiten" style="width: 100%;">)
+            </td>
+            <td class="col-details">
+              <ul>
+                <li>Geliefert wird 1x gerenderte Außenansicht des Objektes <input type="text" class="dynamic-field" value="XXX" style="width: 50px;"> aus der Vogelperspektive (siehe blauen Pfeil):</li>
+                <li><input type="text" class="dynamic-field" value="(ca. 45° aus Nord-Osten)" style="width: 100%;"></li>
+                <li>Fotorealistische Qualität</li>
+                <li>Auf Wunsch eingefügt in von Ihnen zu liefernde Drohnenfotos oder Modellierung der Umgebung</li>
+                <li>Inkl. 1 Revisionsrunde<sup>(1)</sup></li>
+                <li>Format: 2.500 x 1.500 px (300 DPI)</li>
+                <li>Referenzen: <a href="#" class="reference">KLICK</a></li>
+                <li>Nur in Kombination mit allen übrigen Bodenperspektiven verfügbar</li>
+              </ul>
+            </td>
+            <td class="col-price"><input type="text" class="dynamic-field" value=",00 €" style="width: 100%;"></td>
+          </tr>
+          <tr>
+            <td class="col-description"><strong>Preisauftelung:</strong></td>
+            <td class="col-details"></td>
+            <td class="col-price"></td>
+          </tr>
+          <tr>
+            <td class="col-number"></td>
+            <td class="col-description">1 Ansicht Netto:</td>
+            <td class="col-details"><input type="text" class="dynamic-field" value="12,00 €" style="width: 100%;"></td>
+            <td class="col-price"></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Footer -->
+    <div class="page-footer">
+      <div class="footer-column">
+        <p class="company-name">ExposeProfi.de</p>
+        <p>EPCS GmbH</p>
+        <p>GF: Christopher Helm</p>
+        <p>Bruder-Klaus-Str. 3a, 78467 Konstanz</p>
+        <p>HRB 725172, Amtsgericht Freiburg</p>
+        <p>St.-Nr: 0908011277</p>
+        <p>USt-ID: DE347265281</p>
+      </div>
+
+      <div class="footer-column">
+        <p class="company-name">Bankverbindung</p>
+        <p>Qonto (Banque de France)</p>
+        <p>IBAN DE62100101239488471916</p>
+      </div>
+
+      <div class="footer-column">
+        <p>Email: christopher.helm@exposeprofi.de</p>
+        <p>Web: www.exposeprofi.de</p>
+        <p>Tel: +49-7531-1227491</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================
+       PAGE 2: SERVICES TABLE (CONTINUED)
+       ======================================== -->
+  <div class="page">
+    <div class="page-content">
+      <!-- UNIFIED TABLE: PAGE 2 SERVICES -->
+      <table class="no-header">
+        <thead>
+          <tr>
+            <th class="col-number">Anzahl</th>
+            <th class="col-description">Bezeichnung</th>
+            <th class="col-details">Beschreibung</th>
+            <th class="col-price">Stückpreis netto</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- SECTION 3: 3D-GRUNDRISS AND OTHER SERVICES -->
+          <tr>
+            <td class="col-number"><input type="text" class="dynamic-field" value="XXX" style="width: 100%;"></td>
+            <td class="col-description"><strong>3D-Grundriss</strong></td>
+            <td class="col-details">
+              <ul>
+                <li>Format: 2.500 x 1.500 px (300 DPI)</li>
+                <li>Geliefert werden XXX 3D-Grundrisse</li>
+                <li>Hochwertig standardmöbliert</li>
+                <li>Exklusive Qualität</li>
+                <li>Inkl. 1 Revisionsrunde<sup>(1)</sup></li>
+                <li>2.500px x 1.500 px bei 300 DPI</li>
+                <li>Referenzen: <a href="#" class="reference">KLICK</a></li>
+              </ul>
+            </td>
+            <td class="col-price"><input type="text" class="dynamic-field" value="69,00 €" style="width: 100%;"></td>
+          </tr>
+          <tr>
+            <td class="col-number"><input type="text" class="dynamic-field" value="XX" style="width: 100%;"></td>
+            <td class="col-description"><strong>3D-Geschossansicht</strong></td>
+            <td class="col-details">
+              <ul>
+                <li>Geliefert werden XXX 3D-Geschossansichten folgender Einheit(en):</li>
+                <li style="list-style: none;">
+                  ○ <input type="text" class="dynamic-field" value="XXX" style="width: 100px;">
+                </li>
+                <li>Hochwertig standardmöbliert</li>
+                <li>Exklusive Qualität</li>
+                <li>Inkl. 1 Revisionsrunde<sup>(1)</sup></li>
+                <li>2.500px x 1.500 px bei 300 DPI</li>
+              </ul>
+            </td>
+            <td class="col-price"><input type="text" class="dynamic-field" value="199,00 €" style="width: 100%;"></td>
+          </tr>
+          <tr>
+            <td class="col-number"><input type="text" class="dynamic-field" value="XXX" style="width: 100%;"></td>
+            <td class="col-description"><strong>2D-Grundriss</strong></td>
+            <td class="col-details">
+              <ul>
+                <li>Geliefert werden XXX 2D-Grundrisse</li>
+                <li>Hochwertig standardmöbliert</li>
+                <li>Exklusive Qualität</li>
+                <li>Inkl. 1 Revisionsrunde<sup>(1)</sup></li>
+                <li>2.500 px x 1.500 px bei 300 DPI</li>
+                <li>Referenzen: <a href="#" class="reference">KLICK</a></li>
+              </ul>
+            </td>
+            <td class="col-price"><input type="text" class="dynamic-field" value="49,00 €" style="width: 100%;"></td>
+          </tr>
+          <tr>
+            <td class="col-number"><input type="text" class="dynamic-field" value="XXX" style="width: 100%;"></td>
+            <td class="col-description"><strong>Digital Home Staging Fotos der Räume:</strong></td>
+            <td class="col-details">
+              <ul>
+                <li>Geliefert werden XXX Digital Home Staging Fotos der Räume:</li>
+                <li style="list-style: none;">
+                  ○ <input type="text" class="dynamic-field" value="text" style="width: 100%;"></li>
+                <li>Basiert auf vom Kunden bereitgestellten Fotos</li>
+                <li>Individuell eingerichet</li>
+                <li>Fotorealistische Qualität</li>
+                <li>Exakt identische Perspektive wie zugrundeiliegende Fotos</li>
+                <li>Inkl. 1 Revisionsrunde<sup>(1)</sup></li>
+                <li>Referenzen: <a href="#" class="reference">KLICK</a></li>
+              </ul>
+            </td>
+            <td class="col-price"><input type="text" class="dynamic-field" value="99,00 €" style="width: 100%;"></td>
+          </tr>
+          <tr>
+            <td class="col-number"><input type="text" class="dynamic-field" value="XXX" style="width: 100%;"></td>
+            <td class="col-description"><strong>Digitale Renovierung</strong></td>
+            <td class="col-details">
+              <ul>
+                <li>Geliefert werden XXX Digitale Renovierungsfotos folgender Räume:</li>
+                <li style="list-style: none;">
+                  ○ <input type="text" class="dynamic-field" value="text" style="width: 100%;"></li>
+                <li>Basiert auf vom Kunden bereitgestellten Fotos</li>
+                <li>Individuell eingerichet</li>
+                <li>Fotorealistische Qualität</li>
+                <li>Exakt identische Perspektive wie zugrundeiliegende Fotos</li>
+                <li>Inkl. 1 Revisionsrunde<sup>(1)</sup></li>
+              </ul>
+            </td>
+            <td class="col-price"><input type="text" class="dynamic-field" value="139,00 €" style="width: 100%;"></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Footer -->
+    <div class="page-footer">
+      <div class="footer-column">
+        <p class="company-name">ExposeProfi.de</p>
+        <p>EPCS GmbH</p>
+        <p>GF: Christopher Helm</p>
+        <p>Bruder-Klaus-Str. 3a, 78467 Konstanz</p>
+        <p>HRB 725172, Amtsgericht Freiburg</p>
+        <p>St.-Nr: 0908011277</p>
+        <p>USt-ID: DE347265281</p>
+      </div>
+
+      <div class="footer-column">
+        <p class="company-name">Bankverbindung</p>
+        <p>Qonto (Banque de France)</p>
+        <p>IBAN DE62100101239488471916</p>
+      </div>
+
+      <div class="footer-column">
+        <p>Email: christopher.helm@exposeprofi.de</p>
+        <p>Web: www.exposeprofi.de</p>
+        <p>Tel: +49-7531-1227491</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================
+       PAGE 3: MORE SERVICES
+       ======================================== -->
+  <div class="page">
+    <div class="page-content">
+      <!-- UNIFIED TABLE: PAGE 3 SERVICES -->
+      <table class="no-header">
+        <thead>
+          <tr>
+            <th class="col-number">Anzahl</th>
+            <th class="col-description">Bezeichnung</th>
+            <th class="col-details">Beschreibung</th>
+            <th class="col-price">Stückpreis netto</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- SECTION 4: 360° TOUR AND VIDEOS -->
+          <tr>
+            <td class="col-number"><input type="text" class="dynamic-field" value="XXX" style="width: 100%;"></td>
+            <td class="col-description"><strong>360° Tour Innen</strong></td>
+            <td class="col-details">
+              <ul>
+                <li>Referenzen: <a href="#" class="reference">KLICK</a></li>
+                <li>Geliefert wird 1x 360° Tour folgender Wohneinheit:</li>
+                <li style="list-style: none;">
+                  ○ <input type="text" class="dynamic-field" value="text" style="width: 100%;"></li>
+                <li>Begehung des kompletten Innenbereichs</li>
+                <li>Individuell eingerichtet</li>
+                <li>Einzigartige Technologie, die vollkommen frei bewegbar</li>
+                <li>Intuitive Bedienung</li>
+                <li>Passend für alle gängigen Endgeräte</li>
+                <li>Inklusive Fensteraussicht (wahlweise mit beispielhafter oder Verwendung der tatsächlichen Aussicht mittels vom Auftraggeber gelieferten Bildern)</li>
+                <li>Inkl. 2 Revisionsrunden<sup>(1)</sup></li>
+                <li>Inkl. Hosting für 12 Monate<sup>(2)</sup></li>
+                <li>Referenzen: <a href="#" class="reference">KLICK</a></li>
+              </ul>
+            </td>
+            <td class="col-price"><input type="text" class="dynamic-field" value="599,00 €" style="width: 100%;"></td>
+          </tr>
+          <tr>
+            <td class="col-number"><input type="text" class="dynamic-field" value="XXX" style="width: 100%;"></td>
+            <td class="col-description"><strong>360° Video Außen (nur in Kombination mit mind. 2x 3D-Außenvisualisierung)</strong></td>
+            <td class="col-details">
+              <ul>
+                <li>Geliefert wird 1x 360° Video-Tour des Objektes <input type="text" class="dynamic-field" value="XXX" style="width: 100px;"></li>
+                <li>Umgebung schematisch dargestellt</li>
+                <li>Fotorealistische Qualität</li>
+                <li>Länge ca. 90 Sekunden</li>
+                <li>Inkl. 2 Revisionsrunden</li>
+                <li>Referenzen: <a href="#" class="reference">KLICK</a></li>
+              </ul>
+            </td>
+            <td class="col-price"></td>
+          </tr>
+          <tr>
+            <td class="col-number"><input type="text" class="dynamic-field" value="XXX" style="width: 100%;"></td>
+            <td class="col-description"><strong>Slideshow Video</strong></td>
+            <td class="col-details">
+              <ul>
+                <li>Geliefert wird XX Slideshow-Video des Objektes</li>
+                <li>Inkl. aller Visualisierungen und weiterer Fotos</li>
+                <li>Professionell vertont und kommentiert</li>
+                <li>Inkl. Untertitel</li>
+                <li>Referenzen: <a href="#" class="reference">KLICK</a></li>
+              </ul>
+            </td>
+            <td class="col-price"><input type="text" class="dynamic-field" value="499,00 €" style="width: 100%;"></td>
+          </tr>
+          <tr>
+            <td class="col-number"><input type="text" class="dynamic-field" value="XXX" style="width: 100%;"></td>
+            <td class="col-description"><strong>3D-Lageplan</strong></td>
+            <td class="col-details">
+              <ul>
+                <li>Geliefert wird XXX 3D-Lageplan des Objektes in Draufsicht</li>
+                <li>Exklusive Qualität</li>
+                <li>Inkl. 1 Revisionsrunde<sup>(1)</sup></li>
+              </ul>
+            </td>
+            <td class="col-price"><input type="text" class="dynamic-field" value="99,00 €" style="width: 100%;"></td>
+          </tr>
+          <tr>
+            <td class="col-number"><input type="text" class="dynamic-field" value="XXX" style="width: 100%;"></td>
+            <td class="col-description"><strong>Social Media Paket</strong></td>
+            <td class="col-details">
+              <ul>
+                <li>Geliefert wird 1x Social Media Paket für die Visualisierung des Objektes, bestehend aus:</li>
+                <li style="list-style: none;">
+                  ○ Alle statischen Visualisierungen in den für Social Media Posts passenden Formaten</li>
+                <li>Alle zusätzlich benötigten Fotos werden vom Kunden so zur Verfügung gestellt, dass Sie unverändert übernommen werden können</li>
+                <li>Inkl. 2 Revisionsrunden</li>
+                <li>Referenzen: <a href="#" class="reference">KLICK</a></li>
+              </ul>
+            </td>
+            <td class="col-price"><input type="text" class="dynamic-field" value="299,00 €" style="width: 100%;"></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Footer -->
+    <div class="page-footer">
+      <div class="footer-column">
+        <p class="company-name">ExposeProfi.de</p>
+        <p>EPCS GmbH</p>
+        <p>GF: Christopher Helm</p>
+        <p>Bruder-Klaus-Str. 3a, 78467 Konstanz</p>
+        <p>HRB 725172, Amtsgericht Freiburg</p>
+        <p>St.-Nr: 0908011277</p>
+        <p>USt-ID: DE347265281</p>
+      </div>
+
+      <div class="footer-column">
+        <p class="company-name">Bankverbindung</p>
+        <p>Qonto (Banque de France)</p>
+        <p>IBAN DE62100101239488471916</p>
+      </div>
+
+      <div class="footer-column">
+        <p>Email: christopher.helm@exposeprofi.de</p>
+        <p>Web: www.exposeprofi.de</p>
+        <p>Tel: +49-7531-1227491</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================
+       PAGE 4: 3D INTERIOR SERVICES
+       ======================================== -->
+  <div class="page">
+    <div class="page-content">
+      <!-- UNIFIED TABLE: PAGE 4 SERVICES -->
+      <table class="no-header">
+        <thead>
+          <tr>
+            <th class="col-number">Anzahl</th>
+            <th class="col-description">Bezeichnung</th>
+            <th class="col-details">Beschreibung</th>
+            <th class="col-price">Stückpreis netto</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- SECTION 5: 3D-INNENVISUALISIERUNG -->
+          <tr>
+            <td rowspan="11" class="col-number"><input type="text" class="dynamic-field" value="XX" style="width: 100%;"></td>
+            <td class="col-description"><strong>3D-Innenvisualisierung</strong></td>
+            <td class="col-details">
+              <ul>
+                <li>Geliefert werden XX gerenderte Innenansichten der Räume:</li>
+                <li style="list-style: none;">
+                  ○ <input type="text" class="dynamic-field" value="..." style="width: 100%;"></li>
+                <li>Fotorealistische Qualität</li>
+                <li>Eingerichet individuell nach Ihren Wünschen (allerdings keine individuelle Modellierung konkreter Möbelstücke inkludiert)</li>
+                <li>Falls Türen zwischen einzelnen Räumen zu sehen sind, werden diese als geschlossen dargestellt</li>
+                <li>Inkl. 1 Revisionsrunde<sup>(1)</sup></li>
+                <li>Format: 2.500 x 1.500 px (300 DPI)</li>
+                <li>Referenzen: <a href="#" class="reference">KLICK</a></li>
+              </ul>
+            </td>
+            <td class="col-price"><input type="text" class="dynamic-field" value=",00 €" style="width: 100%;"></td>
+          </tr>
+          <tr>
+            <td class="col-description"><strong>Preisauftelung:</strong></td>
+            <td class="col-details"></td>
+            <td class="col-price"></td>
+          </tr>
+          <tr>
+            <td class="col-description">1 Ansicht Netto:</td>
+            <td class="col-details"><input type="text" class="dynamic-field" value="399,00 €" style="width: 100%;"></td>
+            <td class="col-price"></td>
+          </tr>
+          <tr>
+            <td class="col-description">2 Ansichten: Netto pro Ansicht:</td>
+            <td class="col-details"><input type="text" class="dynamic-field" value="299,00 €" style="width: 100%;"></td>
+            <td class="col-price"></td>
+          </tr>
+          <tr>
+            <td class="col-description">3 Ansichten: Netto pro Ansicht:</td>
+            <td class="col-details"><input type="text" class="dynamic-field" value="289,00 €" style="width: 100%;"></td>
+            <td class="col-price"></td>
+          </tr>
+          <tr>
+            <td class="col-description">4 Ansichten: Netto pro Ansicht:</td>
+            <td class="col-details"><input type="text" class="dynamic-field" value="269,00 €" style="width: 100%;"></td>
+            <td class="col-price"></td>
+          </tr>
+          <tr>
+            <td class="col-description">5 Ansichten: Netto pro Ansicht:</td>
+            <td class="col-details"><input type="text" class="dynamic-field" value="259,00 €" style="width: 100%;"></td>
+            <td class="col-price"></td>
+          </tr>
+          <tr>
+            <td class="col-description">6 Ansichten: Netto pro Ansicht:</td>
+            <td class="col-details"><input type="text" class="dynamic-field" value="249,00 €" style="width: 100%;"></td>
+            <td class="col-price"></td>
+          </tr>
+          <tr>
+            <td class="col-description">7 Ansichten: Netto pro Ansicht:</td>
+            <td class="col-details"><input type="text" class="dynamic-field" value="239,00 €" style="width: 100%;"></td>
+            <td class="col-price"></td>
+          </tr>
+          <tr>
+            <td class="col-description">8 Ansichten: Netto pro Ansicht:</td>
+            <td class="col-details"><input type="text" class="dynamic-field" value="229,00 €" style="width: 100%;"></td>
+            <td class="col-price"></td>
+          </tr>
+          <tr>
+            <td class="col-description">9 Ansichten: Netto pro Ansicht:</td>
+            <td class="col-details"><input type="text" class="dynamic-field" value="219,00 €" style="width: 100%;"></td>
+            <td class="col-price"></td>
+          </tr>
+          <tr>
+            <td class="col-number"></td>
+            <td class="col-description">≥10 Ansichten: Netto pro Ansicht:</td>
+            <td class="col-details"><input type="text" class="dynamic-field" value="199,00 €" style="width: 100%;"></td>
+            <td class="col-price"></td>
+          </tr>
+          <tr>
+            <td class="col-number"><input type="text" class="dynamic-field" value="XXX" style="width: 100%;"></td>
+            <td class="col-description"><strong>3D-Visualisierung Terrasse</strong></td>
+            <td class="col-details">
+              <ul>
+                <li>Geliefert wird 1x gerenderte Ansicht folgender Einheit:</li>
+                <li style="list-style: none;">
+                  ○ <input type="text" class="dynamic-field" value="1x Terrasse (Whg. XX)" style="width: 100%;"></li>
+                <li>Fotorealistische Qualität</li>
+                <li>Eingerichet individuell nach Ihren Wünschen (allerdings keine individuelle Modellierung konkreter Möbelstücke inkludiert)</li>
+                <li>Inkl. 1 Revisionsrunde<sup>(1)</sup></li>
+              </ul>
+            </td>
+            <td class="col-price"><input type="text" class="dynamic-field" value=",00 €" style="width: 100%;"></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Footer -->
+    <div class="page-footer">
+      <div class="footer-column">
+        <p class="company-name">ExposeProfi.de</p>
+        <p>EPCS GmbH</p>
+        <p>GF: Christopher Helm</p>
+        <p>Bruder-Klaus-Str. 3a, 78467 Konstanz</p>
+        <p>HRB 725172, Amtsgericht Freiburg</p>
+        <p>St.-Nr: 0908011277</p>
+        <p>USt-ID: DE347265281</p>
+      </div>
+
+      <div class="footer-column">
+        <p class="company-name">Bankverbindung</p>
+        <p>Qonto (Banque de France)</p>
+        <p>IBAN DE62100101239488471916</p>
+      </div>
+
+      <div class="footer-column">
+        <p>Email: christopher.helm@exposeprofi.de</p>
+        <p>Web: www.exposeprofi.de</p>
+        <p>Tel: +49-7531-1227491</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================
+       PAGE 5: PRICING AND TERMS
+       ======================================== -->
+  <div class="page">
+    <div class="page-content">
+      <!-- PRICING SUMMARY -->
+      <div class="section-title">Zusammenfassung:</div>
+      <table class="no-header">
+        <thead>
+          <tr>
+            <th class="col-number">Anzahl</th>
+            <th class="col-description">Bezeichnung</th>
+            <th class="col-details">Beschreibung</th>
+            <th class="col-price">Stückpreis netto</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="col-number"></td>
+            <td class="col-description"><strong>Gesamtpreis Netto</strong></td>
+            <td class="col-details"></td>
+            <td class="col-price"><input type="text" class="dynamic-field" value="00 €" style="width: 100%;"></td>
+          </tr>
+          <tr>
+            <td class="col-number"></td>
+            <td class="col-description">MwSt. (19 %)</td>
+            <td class="col-details"></td>
+            <td class="col-price"><input type="text" class="dynamic-field" value="€" style="width: 100%;"></td>
+          </tr>
+          <tr>
+            <td class="col-number"></td>
+            <td class="col-description"><strong>Gesamtpreis Brutto</strong></td>
+            <td class="col-details"></td>
+            <td class="col-price"><input type="text" class="dynamic-field" value="€" style="width: 100%;"></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- RECOMMENDED PERSPECTIVES -->
+      <div class="section-title">Empfohlene Perspektiven Außen:</div>
+      <p style="margin-bottom: 10px;">Png inserted here:</p>
+      <p style="margin-bottom: 20px;"><strong>Dieses Angebot ist gültig bis: <input type="text" class="dynamic-field" value="XX.XX.25" style="width: 80px;"></strong></p>
+
+      <!-- DELIVERY AND TERMS -->output/main-proposal.docx
+      <div style="margin-bottom: 20px;">
+        <p><strong>Lieferweg:</strong> <input type="text" class="dynamic-field" value="Digital via Email" style="width: 300px;"></p>
+        <p><strong>Voraussichtl. Leistungsdatum:</strong> <input type="text" class="dynamic-field" value="XXX Arbeitstage nach Auftragseingang und Erhalt aller Unterlagen und Informationen" style="width: 100%;"></p>
+      </div>
+
+      <div style="margin-bottom: 20px;">
+        <p><strong>Voraussichtl. Leistungsdatum:</strong> <input type="text" class="dynamic-field" value="XXX Arbeitstage nach Eingang der Anzahlung i.H.v. 50% des Bruttopreises (N, NNN, NN EUR) und Erhalt aller Unterlagen und Informationen" style="width: 100%;"></p>
+      </div>
+
+      <p style="margin-bottom: 20px; font-style: italic;">Mit freundlichen Grüßen<br>
+      <input type="text" class="dynamic-field" value="Christopher Heim" style="width: 200px;"></p>
+
+      <!-- FOOTNOTES -->
+      <div class="footnote">
+        <p><strong>(1):</strong> Sollten Sie dadurch eine weitere Revision benötigen, die nicht durch uns verschuldet wurde, führen wir diese zum kostenlosen Grundpreis durchgehend. Bei komplexeren Änderungswünschen, welche eine deutlich längere Bearbeitungszeit benötigen, behalten wir uns das Recht vor, 50% der ursprünglichen Lieferzeit zu berechnen. Bei Hunderten von Projekten benötigen unsere Kunden im Schnitt unter 6 aller Fälle eine zweite Revision. 50% der ursprünglichen Lieferzeit dauert eine Revision durchschnittlich 2-3 Arbeitstage.</p>
+
+        <p style="margin-top: 15px;"><strong>(2):</strong> Sofern Sie nach 12 Monaten die Tour immer noch benutzen möchten, können Sie diese gerne verlängern, wobei eine geringe Gebühr für 12 Monate anfällt.</p>
+      </div>
+
+      <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #ccc; font-size: 11px; line-height: 1.6;">
+        <p><strong>Haftungsausschluss:</strong> Wir sind stets bestrebt, Ihre Visualisierungen so detailgetreu zu erstellen. Jeder dienen dieser Visualisierungen sind Künstlerische Schöpfungen welche subjektiven Haftung. Schäden auf Grund von Abweichungen hiernach.</p>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="page-footer">
+      <div class="footer-column">
+        <p class="company-name">ExposeProfi.de</p>
+        <p>EPCS GmbH</p>
+        <p>GF: Christopher Helm</p>
+        <p>Bruder-Klaus-Str. 3a, 78467 Konstanz</p>
+        <p>HRB 725172, Amtsgericht Freiburg</p>
+        <p>St.-Nr: 0908011277</p>
+        <p>USt-ID: DE347265281</p>
+      </div>
+
+      <div class="footer-column">
+        <p class="company-name">Bankverbindung</p>
+        <p>Qonto (Banque de France)</p>
+        <p>IBAN DE62100101239488471916</p>
+      </div>
+
+      <div class="footer-column">
+        <p>Email: christopher.helm@exposeprofi.de</p>
+        <p>Web: www.exposeprofi.de</p>
+        <p>Tel: +49-7531-1227491</p>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
