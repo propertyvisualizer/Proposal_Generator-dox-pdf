@@ -395,6 +395,44 @@
       border: 1px solid #333;
     }
 
+    .discount-row {
+      background-color: #fff3cd;
+    }
+
+    .discount-row .summary-value {
+      color: #856404;
+    }
+
+    .add-discount-btn {
+      background-color: #28a745;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      margin: 10px 0;
+      cursor: pointer;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+
+    .add-discount-btn:hover {
+      background-color: #218838;
+    }
+
+    .remove-discount-btn {
+      background-color: #dc3545;
+      color: white;
+      border: none;
+      padding: 4px 12px;
+      margin-left: 10px;
+      cursor: pointer;
+      border-radius: 4px;
+      font-size: 12px;
+    }
+
+    .remove-discount-btn:hover {
+      background-color: #c82333;
+    }
+
     .summary-label {
       padding: 6px 8px;
       width: 70%;
@@ -693,37 +731,78 @@
   </div>
 
   <!-- ========================================
-       PAGE 2: PRICING SUMMARY
+       PAGE 2: PERSPECTIVE IMAGES
+       ======================================== -->
+  <div class="page" id="perspectiveImagesPage" style="display: none;">
+    <div class="page-content">
+      <!-- RECOMMENDED PERSPECTIVES -->
+      <div class="section-title">Empfohlene Perspektiven Außen:</div>
+      <div id="perspectiveImagesContainer">
+        <!-- Images will be inserted here -->
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="page-footer">
+      <div class="footer-column">
+        <p class="company-name">ExposeProfi.de</p>
+        <p>EPCS GmbH</p>
+        <p>GF: Christopher Helm</p>
+        <p>Bruder-Klaus-Str. 3a, 78467 Konstanz</p>
+        <p>HRB 725172, Amtsgericht Freiburg</p>
+        <p>St.-Nr: 0908011277</p>
+        <p>USt-ID: DE347265281</p>
+      </div>
+
+      <div class="footer-column">
+        <p class="company-name">Bankverbindung</p>
+        <p>Qonto (Banque de France)</p>
+        <p>IBAN DE62100101239488471916</p>
+      </div>
+
+      <div class="footer-column">
+        <p>Email: christopher.helm@exposeprofi.de</p>
+        <p>Web: www.exposeprofi.de</p>
+        <p>Tel: +49-7531-1227491</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================
+       PAGE 3: PRICING SUMMARY (LAST PAGE)
        ======================================== -->
   <div class="page">
     <div class="page-content">
       <!-- PRICING SUMMARY -->
       <div class="section-title">Zusammenfassung:</div>
       <table class="pricing-summary">
-        <tbody>
+        <tbody id="summary-tbody">
           <tr class="summary-row">
-            <td class="summary-label"><strong>Gesamtnettopreis</strong></td>
-            <td class="summary-value"><strong id="preview-totalNet">0,00 €</strong></td>
+            <td class="summary-label"><strong>Zwischensumme (Netto)</strong></td>
+            <td class="summary-value"><strong><span class="editable" contenteditable="true" id="preview-subtotalNet" data-field="subtotalNet">0,00 €</span></strong></td>
           </tr>
-          <tr class="summary-row">
-            <td class="summary-label"><strong>MwSt. (19%)</strong></td>
-            <td class="summary-value"><strong id="preview-totalVat">0,00 €</strong></td>
+          <!-- Discount row will be inserted here if added -->
+          <tr class="summary-row" id="vat-row">
+            <td class="summary-label"><strong><span class="editable" contenteditable="true" data-field="vatLabel">MwSt. (19%)</span></strong></td>
+            <td class="summary-value"><strong><span class="editable" contenteditable="true" id="preview-totalVat" data-field="totalVat">0,00 €</span></strong></td>
           </tr>
           <tr class="summary-row">
             <td class="summary-label"><strong>Gesamtbruttopreis</strong></td>
-            <td class="summary-value"><strong id="preview-totalGross">0,00 €</strong></td>
+            <td class="summary-value"><strong><span class="editable" contenteditable="true" id="preview-totalGross" data-field="totalGross">0,00 €</span></strong></td>
           </tr>
         </tbody>
       </table>
+      <button class="add-discount-btn" onclick="addDiscountRow()" id="add-discount-btn">+ Rabatt hinzufügen</button>
+      <div class="edit-hint" style="margin-top: 5px;">Preise und Bezeichnungen sind editierbar - klicken Sie zum Bearbeiten</div>
       
       <p style="margin-top: 32px; margin-bottom: 20px;">
-        <strong>Dieses Angebot ist gültig bis: <span id="preview-validUntil"></span></strong>
+        <strong><span class="editable-text" contenteditable="true" data-field="validUntilText">Dieses Angebot ist gültig bis:</span> <span class="editable" contenteditable="true" id="preview-validUntil" data-field="validUntil"></span></strong>
       </p>
 
       <!-- DELIVERY AND TERMS -->
       <div style="margin-bottom: 20px;">
         <p><strong>Lieferweg:</strong> <span class="editable-text" contenteditable="true" data-field="deliveryMethod">Digital via Email</span></p>
-        <p><strong>Lieferzeit:</strong> <span id="preview-deliveryDays"></span> Werktage ab Beauftragung und Erhalt der Unterlagen</p>
+        <p><strong>Lieferzeit:</strong> <span class="editable" contenteditable="true" id="preview-deliveryDays" data-field="deliveryDays"></span> <span class="editable-text" contenteditable="true" data-field="deliveryDaysText">Werktage ab Beauftragung und Erhalt der Unterlagen</span></p>
       </div>
 
       <div style="margin-bottom: 20px;">
@@ -732,7 +811,7 @@
 
       <p style="margin-bottom: 20px; font-style: italic;">
         <span class="editable-text" contenteditable="true" data-field="closingGreeting">Mit freundlichen Grüßen</span><br>
-        <span id="preview-signatureName">Christopher Helm</span>
+        <span class="editable" contenteditable="true" id="preview-signatureName" data-field="signatureName">Christopher Helm</span>
       </p>
 
       <!-- FOOTNOTES -->
@@ -773,18 +852,6 @@
       </div>
     </div>
   </div>
-
-  <!-- ========================================
-       PAGE 3: PERSPECTIVE IMAGES
-       ======================================== -->
-  <div class="page" id="perspectiveImagesPage" style="display: none;">
-    <div class="page-content">
-      <!-- RECOMMENDED PERSPECTIVES -->
-      <div class="section-title">Empfohlene Perspektiven Außen:</div>
-      <div id="perspectiveImagesContainer">
-        <!-- Images will be inserted here -->
-      </div>
-    </div>
 
   <script>
     // Service descriptions mapping
@@ -929,9 +996,14 @@
       document.getElementById('preview-deliveryDays').textContent = data.projectInfo.deliveryDays;
 
       // Populate pricing
-      document.getElementById('preview-totalNet').textContent = data.pricing.totalNetPrice + ' €';
+      document.getElementById('preview-subtotalNet').textContent = data.pricing.totalNetPrice + ' €';
       document.getElementById('preview-totalVat').textContent = data.pricing.totalVat + ' €';
       document.getElementById('preview-totalGross').textContent = data.pricing.totalGrossPrice + ' €';
+      
+      // Restore discount if it exists
+      if (data.pricing.discount && data.pricing.discount.amount) {
+        addDiscountRow(data.pricing.discount.description, data.pricing.discount.amount);
+      }
 
       // Populate signature
       document.getElementById('preview-signatureName').textContent = data.signature.signatureName;
@@ -1325,6 +1397,94 @@
       return date.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: '2-digit' });
     }
 
+    // Add discount row
+    function addDiscountRow(description = '', amount = '') {
+      // Check if discount row already exists
+      if (document.getElementById('discount-row')) {
+        alert('Rabatt bereits hinzugefügt. Bitte bearbeiten Sie den bestehenden Rabatt.');
+        return;
+      }
+
+      const tbody = document.getElementById('summary-tbody');
+      const vatRow = document.getElementById('vat-row');
+      
+      // Create discount row
+      const discountRow = document.createElement('tr');
+      discountRow.className = 'summary-row discount-row';
+      discountRow.id = 'discount-row';
+      
+      discountRow.innerHTML = `
+        <td class="summary-label">
+          <strong>
+            Rabatt: <span class="editable" contenteditable="true" id="discount-description" data-field="discountDescription">${description || 'Mengenrabatt'}</span>
+          </strong>
+        </td>
+        <td class="summary-value">
+          <strong>
+            - <span class="editable" contenteditable="true" id="discount-amount" data-field="discountAmount">${amount || '0,00'}</span> €
+            <button class="remove-discount-btn" onclick="removeDiscountRow()">Entfernen</button>
+          </strong>
+        </td>
+      `;
+      
+      // Insert before VAT row
+      tbody.insertBefore(discountRow, vatRow);
+      
+      // Hide add button
+      document.getElementById('add-discount-btn').style.display = 'none';
+      
+      // Save to proposalData
+      if (window.proposalData) {
+        if (!window.proposalData.pricing.discount) {
+          window.proposalData.pricing.discount = {};
+        }
+        window.proposalData.pricing.discount.description = description || 'Mengenrabatt';
+        window.proposalData.pricing.discount.amount = amount || '0,00';
+        localStorage.setItem('proposalData', JSON.stringify(window.proposalData));
+      }
+      
+      // Add event listeners for discount fields
+      document.getElementById('discount-description').addEventListener('blur', updateDiscountData);
+      document.getElementById('discount-amount').addEventListener('blur', updateDiscountData);
+    }
+
+    // Remove discount row
+    function removeDiscountRow() {
+      const discountRow = document.getElementById('discount-row');
+      if (discountRow) {
+        discountRow.remove();
+      }
+      
+      // Show add button
+      document.getElementById('add-discount-btn').style.display = 'block';
+      
+      // Remove from proposalData
+      if (window.proposalData && window.proposalData.pricing.discount) {
+        delete window.proposalData.pricing.discount;
+        localStorage.setItem('proposalData', JSON.stringify(window.proposalData));
+      }
+    }
+
+    // Update discount data
+    function updateDiscountData(event) {
+      const field = event.target.dataset.field;
+      const value = event.target.textContent.trim();
+      
+      if (window.proposalData) {
+        if (!window.proposalData.pricing.discount) {
+          window.proposalData.pricing.discount = {};
+        }
+        
+        if (field === 'discountDescription') {
+          window.proposalData.pricing.discount.description = value;
+        } else if (field === 'discountAmount') {
+          window.proposalData.pricing.discount.amount = value;
+        }
+        
+        localStorage.setItem('proposalData', JSON.stringify(window.proposalData));
+      }
+    }
+
     // Go back to form
     function goBack() {
       window.location.href = 'proposal-form.html';
@@ -1400,6 +1560,7 @@
 
     // Add event listeners for editable last page fields
     function initializeEditableFields() {
+      // Handle editable-text fields (terms)
       document.querySelectorAll('.editable-text').forEach(field => {
         field.addEventListener('blur', function() {
           const fieldName = this.dataset.field;
@@ -1417,6 +1578,66 @@
         });
         
         field.addEventListener('keydown', handleEnterKey);
+      });
+
+      // Handle summary editable fields (pricing)
+      document.querySelectorAll('.pricing-summary .editable').forEach(field => {
+        field.addEventListener('blur', function() {
+          const fieldName = this.dataset.field;
+          const newValue = this.textContent.trim();
+          
+          if (window.proposalData && window.proposalData.pricing) {
+            if (fieldName === 'subtotalNet') {
+              // Update the subtotal (remove € sign and spaces)
+              const cleanValue = newValue.replace(/[€\s]/g, '');
+              window.proposalData.pricing.totalNetPrice = cleanValue;
+            } else if (fieldName === 'totalVat') {
+              const cleanValue = newValue.replace(/[€\s]/g, '');
+              window.proposalData.pricing.totalVat = cleanValue;
+            } else if (fieldName === 'totalGross') {
+              const cleanValue = newValue.replace(/[€\s]/g, '');
+              window.proposalData.pricing.totalGrossPrice = cleanValue;
+            } else if (fieldName === 'vatLabel') {
+              if (!window.proposalData.pricing.vatLabel) {
+                window.proposalData.pricing.vatLabel = {};
+              }
+              window.proposalData.pricing.vatLabel = newValue;
+            }
+            
+            localStorage.setItem('proposalData', JSON.stringify(window.proposalData));
+            console.log(`Updated pricing ${fieldName}:`, newValue);
+          }
+        });
+        
+        field.addEventListener('keydown', handleEnterKey);
+      });
+
+      // Handle other editable fields (validUntil, deliveryDays, signatureName)
+      const specialEditables = {
+        'preview-validUntil': 'projectInfo.offerValidUntil',
+        'preview-deliveryDays': 'projectInfo.deliveryDays',
+        'preview-signatureName': 'signature.signatureName'
+      };
+
+      Object.keys(specialEditables).forEach(id => {
+        const element = document.getElementById(id);
+        if (element) {
+          element.addEventListener('blur', function() {
+            const newValue = this.textContent.trim();
+            const path = specialEditables[id].split('.');
+            
+            if (window.proposalData) {
+              if (path.length === 2) {
+                window.proposalData[path[0]][path[1]] = newValue;
+              }
+              
+              localStorage.setItem('proposalData', JSON.stringify(window.proposalData));
+              console.log(`Updated ${specialEditables[id]}:`, newValue);
+            }
+          });
+          
+          element.addEventListener('keydown', handleEnterKey);
+        }
       });
     }
 
