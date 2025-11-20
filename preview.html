@@ -292,6 +292,92 @@
       margin-top: 4px;
     }
 
+    /* Sub-bullet points */
+    .sub-bullet {
+      margin-left: 20px;
+      list-style-type: circle;
+    }
+
+    .bullet-controls {
+      display: inline-flex;
+      gap: 4px;
+      margin-left: 8px;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .editable-bullet:hover .bullet-controls,
+    .bullet-controls:hover {
+      opacity: 1;
+    }
+
+    .bullet-btn {
+      background: #3b82f6;
+      color: white;
+      border: none;
+      padding: 2px 6px;
+      font-size: 10px;
+      border-radius: 3px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .bullet-btn:hover {
+      background: #2563eb;
+    }
+
+    .bullet-btn.delete {
+      background: #ef4444;
+    }
+
+    .bullet-btn.delete:hover {
+      background: #dc2626;
+    }
+
+    .bullet-btn.add-sub {
+      background: #10b981;
+    }
+
+    .bullet-btn.add-sub:hover {
+      background: #059669;
+    }
+
+    .add-bullet-btn {
+      background: #10b981;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      font-size: 11px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: 8px;
+      display: inline-block;
+    }
+
+    .add-bullet-btn:hover {
+      background: #059669;
+    }
+
+    /* Editable last page fields */
+    .editable-text {
+      cursor: text;
+      transition: background-color 0.2s;
+      padding: 2px 4px;
+      border-radius: 2px;
+      display: inline-block;
+      min-width: 50px;
+    }
+
+    .editable-text:hover {
+      background-color: #fffbeb;
+    }
+
+    .editable-text:focus {
+      outline: 2px solid #3b82f6;
+      outline-offset: -2px;
+      background-color: #fef3c7;
+    }
+
     .section-title {
       font-weight: bold;
       margin-top: 16px;
@@ -636,29 +722,29 @@
 
       <!-- DELIVERY AND TERMS -->
       <div style="margin-bottom: 20px;">
-        <p><strong>Lieferweg:</strong> Digital via Email</p>
+        <p><strong>Lieferweg:</strong> <span class="editable-text" contenteditable="true" data-field="deliveryMethod">Digital via Email</span></p>
         <p><strong>Lieferzeit:</strong> <span id="preview-deliveryDays"></span> Werktage ab Beauftragung und Erhalt der Unterlagen</p>
       </div>
 
       <div style="margin-bottom: 20px;">
-        <p><strong>Zahlungsbedingungen:</strong> 50% Anzahlung, Rest nach Lieferung - innerhalb 14 Tage netto</p>
+        <p><strong>Zahlungsbedingungen:</strong> <span class="editable-text" contenteditable="true" data-field="paymentTerms">50% Anzahlung, Rest nach Lieferung - innerhalb 14 Tage netto</span></p>
       </div>
 
       <p style="margin-bottom: 20px; font-style: italic;">
-        Mit freundlichen Grüßen<br>
+        <span class="editable-text" contenteditable="true" data-field="closingGreeting">Mit freundlichen Grüßen</span><br>
         <span id="preview-signatureName">Christopher Helm</span>
       </p>
 
       <!-- FOOTNOTES -->
       <div class="footnote">
         <p><strong>Hinweise:</strong></p>
-        <p>• Alle Preise verstehen sich in Euro zzgl. der gesetzlichen Mehrwertsteuer.</p>
-        <p>• Die Lieferzeit beginnt nach Auftragsbestätigung und Zahlungseingang der Anzahlung.</p>
+        <p>• <span class="editable-text" contenteditable="true" data-field="note1">Alle Preise verstehen sich in Euro zzgl. der gesetzlichen Mehrwertsteuer.</span></p>
+        <p>• <span class="editable-text" contenteditable="true" data-field="note2">Die Lieferzeit beginnt nach Auftragsbestätigung und Zahlungseingang der Anzahlung.</span></p>
       </div>
 
       <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #ccc; font-size: 11px; line-height: 1.6;">
-        <p><strong>Korrekturschleifen:</strong> Bis zu 2 Korrekturschleifen sind im Preis inbegriffen. Weitere Korrekturschleifen werden nach Aufwand berechnet.</p>
-        <p><strong>Nutzungsrechte:</strong> Mit vollständiger Bezahlung erhalten Sie die uneingeschränkten Nutzungsrechte an den gelieferten Visualisierungen.</p>
+        <p><strong>Korrekturschleifen:</strong> <span class="editable-text" contenteditable="true" data-field="revisionPolicy">Bis zu 2 Korrekturschleifen sind im Preis inbegriffen. Weitere Korrekturschleifen werden nach Aufwand berechnet.</span></p>
+        <p><strong>Nutzungsrechte:</strong> <span class="editable-text" contenteditable="true" data-field="usageRights">Mit vollständiger Bezahlung erhalten Sie die uneingeschränkten Nutzungsrechte an den gelieferten Visualisierungen.</span></p>
       </div>
     </div>
 
@@ -943,34 +1029,57 @@
         // Column 3: Description (editable bullet points)
         const cellDescription = document.createElement('td');
         cellDescription.className = 'col-description';
+        cellDescription.dataset.serviceIndex = index;
         
-        // Use custom description if provided, otherwise use default
-        let description;
-        if (service.customDescription && service.customDescription.length > 0) {
-          description = service.customDescription;
-        } else {
-          description = serviceInfo ? serviceInfo.description : null;
-        }
+        // Always start with default description, then add custom ones below
+        const defaultDescription = serviceInfo ? serviceInfo.description : [];
+        const customDescription = service.customDescription || [];
         
-        if (description && description.length > 0) {
+        if (defaultDescription.length > 0 || customDescription.length > 0) {
           const ul = document.createElement('ul');
-          description.forEach((desc, descIndex) => {
-            const li = document.createElement('li');
-            const bulletSpan = document.createElement('span');
-            bulletSpan.className = 'editable-bullet';
-            bulletSpan.contentEditable = 'true';
-            bulletSpan.textContent = desc;
-            bulletSpan.dataset.serviceIndex = index;
-            bulletSpan.dataset.bulletIndex = descIndex;
-            bulletSpan.addEventListener('blur', updateBulletPoint);
-            bulletSpan.addEventListener('keydown', handleEnterKey);
-            li.appendChild(bulletSpan);
+          ul.dataset.serviceIndex = index;
+          
+          // Add default bullets (non-deletable)
+          defaultDescription.forEach((desc, descIndex) => {
+            const li = createBulletItem(desc, index, descIndex, false, false);
             ul.appendChild(li);
           });
+          
+          // Add custom bullets (deletable)
+          customDescription.forEach((desc, descIndex) => {
+            // Handle sub-bullets (if desc is an object with children)
+            if (typeof desc === 'object' && desc.text) {
+              const li = createBulletItem(desc.text, index, defaultDescription.length + descIndex, true, false);
+              
+              // Add sub-bullets if they exist
+              if (desc.children && desc.children.length > 0) {
+                const subUl = document.createElement('ul');
+                subUl.className = 'sub-bullet';
+                desc.children.forEach((subDesc, subIndex) => {
+                  const subLi = createBulletItem(subDesc, index, `${defaultDescription.length + descIndex}-${subIndex}`, true, true);
+                  subUl.appendChild(subLi);
+                });
+                li.appendChild(subUl);
+              }
+              ul.appendChild(li);
+            } else {
+              const li = createBulletItem(desc, index, defaultDescription.length + descIndex, true, false);
+              ul.appendChild(li);
+            }
+          });
+          
           cellDescription.appendChild(ul);
+          
+          // Add button to add new bullet
+          const addBtn = document.createElement('button');
+          addBtn.className = 'add-bullet-btn';
+          addBtn.textContent = '+ Add bullet';
+          addBtn.onclick = () => addNewBullet(index);
+          cellDescription.appendChild(addBtn);
+          
           const hint = document.createElement('div');
           hint.className = 'edit-hint';
-          hint.textContent = 'Click to edit';
+          hint.textContent = 'Click to edit, use buttons to add/delete';
           cellDescription.appendChild(hint);
         } else {
           cellDescription.textContent = 'Beschreibung nicht verfügbar';
@@ -997,6 +1106,134 @@
       });
     }
 
+    // Create bullet item with controls
+    function createBulletItem(text, serviceIndex, bulletIndex, isDeletable, isSubBullet) {
+      const li = document.createElement('li');
+      
+      const bulletSpan = document.createElement('span');
+      bulletSpan.className = 'editable-bullet';
+      bulletSpan.contentEditable = 'true';
+      bulletSpan.textContent = text;
+      bulletSpan.dataset.serviceIndex = serviceIndex;
+      bulletSpan.dataset.bulletIndex = bulletIndex;
+      bulletSpan.dataset.isSubBullet = isSubBullet;
+      bulletSpan.addEventListener('blur', updateBulletPoint);
+      bulletSpan.addEventListener('keydown', handleEnterKey);
+      li.appendChild(bulletSpan);
+      
+      // Add controls for custom bullets
+      if (isDeletable) {
+        const controls = document.createElement('span');
+        controls.className = 'bullet-controls';
+        
+        // Add sub-bullet button (only for main bullets, not sub-bullets)
+        if (!isSubBullet) {
+          const addSubBtn = document.createElement('button');
+          addSubBtn.className = 'bullet-btn add-sub';
+          addSubBtn.textContent = '+ Sub';
+          addSubBtn.onclick = (e) => {
+            e.stopPropagation();
+            addSubBullet(serviceIndex, bulletIndex, li);
+          };
+          controls.appendChild(addSubBtn);
+        }
+        
+        // Delete button
+        const deleteBtn = document.createElement('button');
+        deleteBtn.className = 'bullet-btn delete';
+        deleteBtn.textContent = '✕';
+        deleteBtn.onclick = (e) => {
+          e.stopPropagation();
+          deleteBullet(serviceIndex, bulletIndex, li, isSubBullet);
+        };
+        controls.appendChild(deleteBtn);
+        
+        bulletSpan.appendChild(controls);
+      }
+      
+      return li;
+    }
+
+    // Add new bullet point to a service
+    function addNewBullet(serviceIndex) {
+      const service = window.proposalData.services[serviceIndex];
+      
+      if (!service.customDescription) {
+        service.customDescription = [];
+      }
+      
+      service.customDescription.push('New bullet point');
+      
+      // Update localStorage
+      localStorage.setItem('proposalData', JSON.stringify(window.proposalData));
+      
+      // Re-render the table
+      populateServicesTable(window.proposalData.services);
+    }
+
+    // Add sub-bullet to a bullet point
+    function addSubBullet(serviceIndex, bulletIndex, parentLi) {
+      const service = window.proposalData.services[serviceIndex];
+      const serviceInfo = findServiceInfo(service.name);
+      const defaultLength = serviceInfo ? serviceInfo.description.length : 0;
+      const customIndex = bulletIndex - defaultLength;
+      
+      if (!service.customDescription) {
+        service.customDescription = [];
+      }
+      
+      // Convert string to object with children if needed
+      const currentBullet = service.customDescription[customIndex];
+      if (typeof currentBullet === 'string') {
+        service.customDescription[customIndex] = {
+          text: currentBullet,
+          children: ['New sub-point']
+        };
+      } else if (currentBullet && currentBullet.children) {
+        currentBullet.children.push('New sub-point');
+      }
+      
+      // Update localStorage
+      localStorage.setItem('proposalData', JSON.stringify(window.proposalData));
+      
+      // Re-render the table
+      populateServicesTable(window.proposalData.services);
+    }
+
+    // Delete a bullet point
+    function deleteBullet(serviceIndex, bulletIndex, li, isSubBullet) {
+      if (!confirm('Delete this bullet point?')) return;
+      
+      const service = window.proposalData.services[serviceIndex];
+      const serviceInfo = findServiceInfo(service.name);
+      const defaultLength = serviceInfo ? serviceInfo.description.length : 0;
+      
+      if (isSubBullet) {
+        // Handle sub-bullet deletion
+        const [parentIndex, subIndex] = bulletIndex.split('-').map(Number);
+        const customIndex = parentIndex - defaultLength;
+        
+        if (service.customDescription[customIndex] && service.customDescription[customIndex].children) {
+          service.customDescription[customIndex].children.splice(subIndex, 1);
+          
+          // If no more children, convert back to string
+          if (service.customDescription[customIndex].children.length === 0) {
+            service.customDescription[customIndex] = service.customDescription[customIndex].text;
+          }
+        }
+      } else {
+        // Handle main bullet deletion
+        const customIndex = bulletIndex - defaultLength;
+        service.customDescription.splice(customIndex, 1);
+      }
+      
+      // Update localStorage
+      localStorage.setItem('proposalData', JSON.stringify(window.proposalData));
+      
+      // Re-render the table
+      populateServicesTable(window.proposalData.services);
+    }
+
     // Update service data when field is edited
     function updateServiceData(event) {
       const span = event.target;
@@ -1020,21 +1257,42 @@
     function updateBulletPoint(event) {
       const span = event.target;
       const serviceIndex = parseInt(span.dataset.serviceIndex);
-      const bulletIndex = parseInt(span.dataset.bulletIndex);
-      const newValue = span.textContent.trim();
+      const bulletIndex = span.dataset.bulletIndex;
+      const isSubBullet = span.dataset.isSubBullet === 'true';
+      const newValue = span.textContent.replace(/[+✕].*$/g, '').trim(); // Remove control buttons from text
       
       if (window.proposalData && window.proposalData.services[serviceIndex]) {
         const service = window.proposalData.services[serviceIndex];
+        const serviceInfo = findServiceInfo(service.name);
+        const defaultLength = serviceInfo ? serviceInfo.description.length : 0;
         
-        // Initialize customDescription if it doesn't exist
-        if (!service.customDescription) {
-          const serviceInfo = findServiceInfo(service.name);
-          service.customDescription = serviceInfo ? [...serviceInfo.description] : [];
-        }
-        
-        // Update the specific bullet point
-        if (service.customDescription[bulletIndex] !== undefined) {
-          service.customDescription[bulletIndex] = newValue;
+        // Only update custom bullets (not default ones)
+        if (bulletIndex >= defaultLength || isSubBullet) {
+          if (!service.customDescription) {
+            service.customDescription = [];
+          }
+          
+          if (isSubBullet) {
+            // Handle sub-bullet update
+            const [parentIndex, subIndex] = bulletIndex.split('-').map(Number);
+            const customIndex = parentIndex - defaultLength;
+            
+            if (service.customDescription[customIndex] && service.customDescription[customIndex].children) {
+              service.customDescription[customIndex].children[subIndex] = newValue;
+            }
+          } else {
+            // Handle main bullet update
+            const customIndex = bulletIndex - defaultLength;
+            const currentBullet = service.customDescription[customIndex];
+            
+            // Preserve children if they exist
+            if (typeof currentBullet === 'object' && currentBullet.children) {
+              service.customDescription[customIndex].text = newValue;
+            } else {
+              service.customDescription[customIndex] = newValue;
+            }
+          }
+          
           // Update localStorage
           localStorage.setItem('proposalData', JSON.stringify(window.proposalData));
           console.log(`Updated bullet ${bulletIndex} for service ${serviceIndex}:`, newValue);
@@ -1140,8 +1398,48 @@
       }
     }
 
+    // Add event listeners for editable last page fields
+    function initializeEditableFields() {
+      document.querySelectorAll('.editable-text').forEach(field => {
+        field.addEventListener('blur', function() {
+          const fieldName = this.dataset.field;
+          const newValue = this.textContent.trim();
+          
+          if (window.proposalData) {
+            if (!window.proposalData.terms) {
+              window.proposalData.terms = {};
+            }
+            
+            window.proposalData.terms[fieldName] = newValue;
+            localStorage.setItem('proposalData', JSON.stringify(window.proposalData));
+            console.log(`Updated ${fieldName}:`, newValue);
+          }
+        });
+        
+        field.addEventListener('keydown', handleEnterKey);
+      });
+    }
+
+    // Load saved terms data
+    function loadTermsData() {
+      if (window.proposalData && window.proposalData.terms) {
+        const terms = window.proposalData.terms;
+        
+        Object.keys(terms).forEach(key => {
+          const field = document.querySelector(`[data-field="${key}"]`);
+          if (field && terms[key]) {
+            field.textContent = terms[key];
+          }
+        });
+      }
+    }
+
     // Load data on page load
-    window.addEventListener('DOMContentLoaded', loadProposalData);
+    window.addEventListener('DOMContentLoaded', () => {
+      loadProposalData();
+      initializeEditableFields();
+      loadTermsData();
+    });
   </script>
 </body>
 </html>

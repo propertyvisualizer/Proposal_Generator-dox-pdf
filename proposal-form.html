@@ -285,6 +285,142 @@
             margin-top: 6px;
         }
 
+        /* Bullet point management */
+        .bullets-container {
+            background: #f9fafb;
+            border: 1px solid #e0e6ed;
+            border-radius: 6px;
+            padding: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .bullet-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .bullet-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            margin-bottom: 8px;
+            padding: 8px;
+            background: white;
+            border-radius: 4px;
+            border: 1px solid #e0e6ed;
+        }
+
+        .bullet-item.sub-bullet {
+            margin-left: 32px;
+            background: #f0f3f8;
+        }
+
+        .bullet-marker {
+            font-size: 12px;
+            color: #6b7280;
+            min-width: 16px;
+            margin-top: 4px;
+        }
+
+        .bullet-item.sub-bullet .bullet-marker {
+            color: #9ca3af;
+        }
+
+        .bullet-input {
+            flex: 1;
+            border: none;
+            background: transparent;
+            font-size: 14px;
+            padding: 4px;
+            font-family: inherit;
+        }
+
+        .bullet-input:focus {
+            outline: none;
+            background: #fffbeb;
+            border-radius: 3px;
+        }
+
+        .bullet-controls {
+            display: flex;
+            gap: 4px;
+        }
+
+        .bullet-control-btn {
+            padding: 4px 8px;
+            border: none;
+            border-radius: 4px;
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .bullet-control-btn.add-sub {
+            background: #10b981;
+            color: white;
+        }
+
+        .bullet-control-btn.add-sub:hover {
+            background: #059669;
+        }
+
+        .bullet-control-btn.delete {
+            background: #ef4444;
+            color: white;
+        }
+
+        .bullet-control-btn.delete:hover {
+            background: #dc2626;
+        }
+
+        .add-bullet-btn {
+            width: 100%;
+            padding: 8px;
+            background: #10b981;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 8px;
+        }
+
+        .add-bullet-btn:hover {
+            background: #059669;
+        }
+
+        .default-bullets {
+            background: #f0f9ff;
+            border: 1px solid #bae6fd;
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 12px;
+        }
+
+        .default-bullets-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: #0369a1;
+            margin-bottom: 8px;
+        }
+
+        .default-bullets ul {
+            list-style: disc;
+            padding-left: 20px;
+            margin: 0;
+        }
+
+        .default-bullets li {
+            font-size: 13px;
+            color: #374151;
+            margin-bottom: 4px;
+        }
+
         .json-output {
             background: #1e1e1e;
             color: #d4d4d4;
@@ -563,8 +699,20 @@
                         </div>
                         <div class="form-group">
                             <label>Description Details (Optional)</label>
-                            <textarea class="service-description" data-service="exterior-ground" placeholder="Add custom bullet points (one per line)&#10;e.g.:&#10;South-East view&#10;Evening lighting&#10;Garden perspective" rows="4"></textarea>
-                            <span class="helper-text">Add custom description points or leave empty for default</span>
+                            <div class="default-bullets">
+                                <div class="default-bullets-title">Default Description:</div>
+                                <ul>
+                                    <li>Fotorealistische 3D-Visualisierung aus Bodenperspektive</li>
+                                    <li>Hochauflösende Darstellung (min. 3000px)</li>
+                                    <li>Professionelle Lichtsetzung und Materialisierung</li>
+                                    <li>Umgebungsgestaltung mit Vegetation und Kontext</li>
+                                </ul>
+                            </div>
+                            <div class="bullets-container" id="bullets-exterior-ground">
+                                <ul class="bullet-list" data-service="exterior-ground"></ul>
+                            </div>
+                            <button type="button" class="add-bullet-btn" onclick="addBulletPoint('exterior-ground')">+ Add Custom Bullet Point</button>
+                            <span class="helper-text">Add custom description points - they will appear below defaults</span>
                         </div>
                         <div class="price-display">
                             <span>Price: <strong><span class="service-price" data-service="exterior-ground">0,00 €</span></strong></span>
@@ -975,6 +1123,30 @@
                             if (quantityInput && savedService.quantity) {
                                 quantityInput.value = savedService.quantity;
                             }
+                            
+                            // Restore custom descriptions as bullet points
+                            if (savedService.customDescription && quantityInput) {
+                                const serviceId = quantityInput.dataset.service;
+                                serviceBullets[serviceId] = savedService.customDescription.map((desc, index) => {
+                                    if (typeof desc === 'object' && desc.text) {
+                                        return {
+                                            id: Date.now() + index + Math.random(),
+                                            text: desc.text,
+                                            children: (desc.children || []).map((sub, subIndex) => ({
+                                                id: Date.now() + index + subIndex + Math.random() + 0.1,
+                                                text: sub
+                                            }))
+                                        };
+                                    } else {
+                                        return {
+                                            id: Date.now() + index + Math.random(),
+                                            text: desc,
+                                            children: []
+                                        };
+                                    }
+                                });
+                                renderBullets(serviceId);
+                            }
                         }
                     });
                 }
@@ -1262,6 +1434,260 @@
             }
         }
 
+        // ========== BULLET POINT MANAGEMENT ==========
+        
+        // Store for bullet points data structure
+        let serviceBullets = {};
+
+        // Default service descriptions
+        const serviceDefaults = {
+            'exterior-ground': [
+                'Fotorealistische 3D-Visualisierung aus Bodenperspektive',
+                'Hochauflösende Darstellung (min. 3000px)',
+                'Professionelle Lichtsetzung und Materialisierung',
+                'Umgebungsgestaltung mit Vegetation und Kontext'
+            ],
+            'exterior-bird': [
+                'Fotorealistische Vogelperspektive',
+                'Ideal für Gesamtübersicht des Projekts',
+                'Nur in Kombination mit Bodenperspektiven'
+            ],
+            '3d-floorplan': [
+                'Fotorealistischer 3D-Grundriss',
+                'Möblierte Darstellung',
+                'Hochauflösende Qualität'
+            ],
+            '3d-complete-floor': [
+                'Komplette 3D-Ansicht eines Geschosses',
+                'Alle Wohnungen in einem Geschoss',
+                'Möblierte Darstellung'
+            ],
+            '2d-floorplan': [
+                'Professioneller 2D-Grundriss',
+                'Bemaßung und Flächenangaben',
+                'Druckfertige Qualität'
+            ],
+            'home-staging': [
+                'Digitale Möblierung leerer Räume',
+                'Fotorealistische Integration',
+                'Verschiedene Einrichtungsstile'
+            ],
+            'renovation': [
+                'Digitale Aufbereitung alter Räume',
+                'Visualisierung von Renovierungspotential',
+                'Fotorealistische Darstellung'
+            ],
+            '360-interior': [
+                'Interaktive 360° Innenraumtour',
+                'Navigation durch alle Räume',
+                'Einbettbar auf Website'
+            ],
+            '360-exterior': [
+                '360° Außenansicht Video',
+                'Nur mit min. 2x 3D-Außenvisualisierung',
+                'Preis auf Anfrage'
+            ],
+            'slideshow': [
+                'Professionelles Slideshow-Video',
+                'Musik und Übergänge',
+                'Ideal für Social Media'
+            ],
+            'site-plan': [
+                '3D-Darstellung der Lage',
+                'Umgebungskontext',
+                'Verkehrsanbindung'
+            ],
+            'social-media': [
+                'Optimierte Bilder für Social Media',
+                'Verschiedene Formate',
+                'Stories und Posts'
+            ],
+            'interior': [
+                'Fotorealistische Innenraumvisualisierung',
+                'Hochauflösende Darstellung',
+                'Professionelle Lichtsetzung',
+                'Verschiedene Perspektiven möglich'
+            ],
+            'terrace': [
+                'Fotorealistische Terrassenvisualisierung',
+                'Mit Möblierung und Bepflanzung',
+                'Preis auf Anfrage'
+            ]
+        };
+
+        // Add a new bullet point to a service
+        function addBulletPoint(serviceId) {
+            if (!serviceBullets[serviceId]) {
+                serviceBullets[serviceId] = [];
+            }
+
+            const bulletId = Date.now() + Math.random();
+            serviceBullets[serviceId].push({
+                id: bulletId,
+                text: '',
+                children: []
+            });
+
+            renderBullets(serviceId);
+            
+            // Focus on the new input
+            setTimeout(() => {
+                const input = document.querySelector(`input[data-bullet-id="${bulletId}"]`);
+                if (input) input.focus();
+            }, 50);
+            
+            saveFormData();
+        }
+
+        // Add a sub-bullet to a parent bullet
+        function addSubBullet(serviceId, parentId) {
+            if (!serviceBullets[serviceId]) return;
+
+            const parentBullet = serviceBullets[serviceId].find(b => b.id === parentId);
+            if (!parentBullet) return;
+
+            const subBulletId = Date.now() + Math.random();
+            parentBullet.children.push({
+                id: subBulletId,
+                text: ''
+            });
+
+            renderBullets(serviceId);
+            
+            // Focus on the new input
+            setTimeout(() => {
+                const input = document.querySelector(`input[data-bullet-id="${subBulletId}"]`);
+                if (input) input.focus();
+            }, 50);
+            
+            saveFormData();
+        }
+
+        // Delete a bullet point
+        function deleteBullet(serviceId, bulletId, isSubBullet = false, parentId = null) {
+            if (!serviceBullets[serviceId]) return;
+
+            if (isSubBullet && parentId) {
+                const parentBullet = serviceBullets[serviceId].find(b => b.id === parentId);
+                if (parentBullet) {
+                    parentBullet.children = parentBullet.children.filter(sub => sub.id !== bulletId);
+                }
+            } else {
+                serviceBullets[serviceId] = serviceBullets[serviceId].filter(b => b.id !== bulletId);
+            }
+
+            renderBullets(serviceId);
+            saveFormData();
+        }
+
+        // Update bullet text
+        function updateBulletText(serviceId, bulletId, text, isSubBullet = false, parentId = null) {
+            if (!serviceBullets[serviceId]) return;
+
+            if (isSubBullet && parentId) {
+                const parentBullet = serviceBullets[serviceId].find(b => b.id === parentId);
+                if (parentBullet) {
+                    const subBullet = parentBullet.children.find(sub => sub.id === bulletId);
+                    if (subBullet) {
+                        subBullet.text = text;
+                    }
+                }
+            } else {
+                const bullet = serviceBullets[serviceId].find(b => b.id === bulletId);
+                if (bullet) {
+                    bullet.text = text;
+                }
+            }
+            
+            saveFormData();
+        }
+
+        // Render bullets for a service
+        function renderBullets(serviceId) {
+            const container = document.querySelector(`ul[data-service="${serviceId}"]`);
+            if (!container) return;
+
+            const bullets = serviceBullets[serviceId] || [];
+            container.innerHTML = '';
+
+            bullets.forEach(bullet => {
+                // Main bullet
+                const li = document.createElement('li');
+                li.className = 'bullet-item';
+                li.innerHTML = `
+                    <span class="bullet-marker">\u2022</span>
+                    <input type="text" 
+                           class="bullet-input" 
+                           value="${bullet.text || ''}" 
+                           placeholder="Enter bullet point text..."
+                           data-bullet-id="${bullet.id}"
+                           onchange="updateBulletText('${serviceId}', ${bullet.id}, this.value)">
+                    <div class="bullet-controls">
+                        <button type="button" 
+                                class="bullet-control-btn add-sub" 
+                                onclick="addSubBullet('${serviceId}', ${bullet.id})"
+                                title="Add sub-bullet">+ Sub</button>
+                        <button type="button" 
+                                class="bullet-control-btn delete" 
+                                onclick="deleteBullet('${serviceId}', ${bullet.id})"
+                                title="Delete">\u2715</button>
+                    </div>
+                `;
+                container.appendChild(li);
+
+                // Sub-bullets
+                if (bullet.children && bullet.children.length > 0) {
+                    bullet.children.forEach(subBullet => {
+                        const subLi = document.createElement('li');
+                        subLi.className = 'bullet-item sub-bullet';
+                        subLi.innerHTML = `
+                            <span class="bullet-marker">\u25E6</span>
+                            <input type="text" 
+                                   class="bullet-input" 
+                                   value="${subBullet.text || ''}" 
+                                   placeholder="Enter sub-bullet text..."
+                                   data-bullet-id="${subBullet.id}"
+                                   onchange="updateBulletText('${serviceId}', ${subBullet.id}, this.value, true, ${bullet.id})">
+                            <div class="bullet-controls">
+                                <button type="button" 
+                                        class="bullet-control-btn delete" 
+                                        onclick="deleteBullet('${serviceId}', ${subBullet.id}, true, ${bullet.id})"
+                                        title="Delete">\u2715</button>
+                            </div>
+                        `;
+                        container.appendChild(subLi);
+                    });
+                }
+            });
+        }
+
+        // Convert bullets to the format expected by collectFormData
+        function bulletsToDescriptionArray(serviceId) {
+            if (!serviceBullets[serviceId] || serviceBullets[serviceId].length === 0) {
+                return null;
+            }
+
+            return serviceBullets[serviceId]
+                .filter(bullet => bullet.text.trim())
+                .map(bullet => {
+                    if (bullet.children && bullet.children.length > 0) {
+                        const validChildren = bullet.children
+                            .filter(sub => sub.text.trim())
+                            .map(sub => sub.text.trim());
+                        
+                        if (validChildren.length > 0) {
+                            return {
+                                text: bullet.text.trim(),
+                                children: validChildren
+                            };
+                        }
+                    }
+                    return bullet.text.trim();
+                });
+        }
+
+        // ========== END BULLET POINT MANAGEMENT ==========
+
         function collectImageData() {
             const images = [];
             const imageItems = document.querySelectorAll('.image-item');
@@ -1314,18 +1740,8 @@
                 const quantity = parseInt(quantityInput?.value) || 0;
                 const service = quantityInput?.dataset.service;
                 
-                // Get custom description if provided
-                const descriptionTextarea = item.querySelector('.service-description');
-                const customDescription = descriptionTextarea?.value.trim();
-                let descriptionArray = null;
-                
-                if (customDescription) {
-                    // Split by newlines and filter empty lines
-                    descriptionArray = customDescription
-                        .split('\n')
-                        .map(line => line.trim())
-                        .filter(line => line.length > 0);
-                }
+                // Get custom description from bullet point system
+                const descriptionArray = bulletsToDescriptionArray(service);
                 
                 if (service && quantity > 0) {
                     const priceFunc = pricing[service];

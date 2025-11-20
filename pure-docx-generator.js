@@ -468,13 +468,15 @@ class PureDocxProposalGenerator {
     this.data.services.forEach((service, index) => {
       const serviceInfo = this.serviceDescriptions[service.name];
       
-      // Use custom description if provided, otherwise use default
-      let description;
-      if (service.customDescription && service.customDescription.length > 0) {
-        description = service.customDescription;
-      } else {
-        description = serviceInfo ? serviceInfo.description : ['Beschreibung nicht verfügbar'];
-      }
+      // Always start with default description
+      const defaultDescription = serviceInfo ? serviceInfo.description : [];
+      const customDescription = service.customDescription || [];
+      
+      // Combine default and custom descriptions
+      const combinedDescription = [
+        ...defaultDescription,
+        ...customDescription
+      ];
       
       const link = serviceInfo ? serviceInfo.link : null;
 
@@ -502,8 +504,8 @@ class PureDocxProposalGenerator {
                 }),
               ],
             }),
-            // Column 3: Description (bullet points)
-            this.createBulletListCell(description, 54, link),
+            // Column 3: Description (bullet points with sub-bullets)
+            this.createBulletListCell(combinedDescription, 54, link),
             // Column 4: Unit Price
             new TableCell({
               width: { size: 10, type: WidthType.PERCENTAGE },
@@ -545,15 +547,79 @@ class PureDocxProposalGenerator {
   /**
    * Create bullet list cell with optional hyperlink support
    */
+  /**
+   * Create bullet list cell with optional hyperlink support and sub-bullets
+   */
   createBulletListCell(items, width = 54, linkUrl = null) {
     let currentLinkUrl = linkUrl;
+    const paragraphs = [];
     
-    return new TableCell({
-      width: { size: width, type: WidthType.PERCENTAGE },
-      verticalAlign: VerticalAlign.TOP,
-      children: items.map(item => {
+    items.forEach(item => {
+      // Handle nested structure (item with children/sub-bullets)
+      if (typeof item === 'object' && item !== null && item.text) {
+        // Main bullet
+        const mainText = item.text;
+        
+        // Check for link markers in main text
+        if (mainText.includes('Referenzen: Klick') || mainText.includes('Referenz: Klick')) {
+          const isPlural = mainText.includes('Referenzen: Klick');
+          const splitText = isPlural ? 'Referenzen: ' : 'Referenz: ';
+          const parts = mainText.split(splitText);
+          
+          const children = [new TextRun({ text: parts[0] + splitText, size: 18 })];
+          
+          if (currentLinkUrl) {
+            children.push(
+              new ExternalHyperlink({
+                children: [
+                  new TextRun({
+                    text: 'Klick',
+                    size: 18,
+                    color: '0066cc',
+                    underline: {},
+                  }),
+                ],
+                link: currentLinkUrl,
+              })
+            );
+          } else {
+            children.push(new TextRun({ text: 'Klick', size: 18, color: '0066cc', underline: {} }));
+          }
+          
+          paragraphs.push(
+            new Paragraph({
+              bullet: { level: 0 },
+              spacing: { after: 80 },
+              children: children,
+            })
+          );
+        } else {
+          paragraphs.push(
+            new Paragraph({
+              bullet: { level: 0 },
+              spacing: { after: 80 },
+              children: [new TextRun({ text: mainText, size: 18 })],
+            })
+          );
+        }
+        
+        // Add sub-bullets if they exist
+        if (item.children && Array.isArray(item.children)) {
+          item.children.forEach(subItem => {
+            paragraphs.push(
+              new Paragraph({
+                bullet: { level: 1 }, // Level 1 for sub-bullets
+                spacing: { after: 80 },
+                children: [new TextRun({ text: subItem, size: 18 })],
+              })
+            );
+          });
+        }
+      } 
+      // Handle string items (regular bullets)
+      else if (typeof item === 'string') {
         // Check if item contains a link marker
-        if (typeof item === 'string' && (item.includes('Referenzen: Klick') || item.includes('Referenz: Klick'))) {
+        if (item.includes('Referenzen: Klick') || item.includes('Referenz: Klick')) {
           const isPlural = item.includes('Referenzen: Klick');
           const splitText = isPlural ? 'Referenzen: ' : 'Referenz: ';
           const parts = item.split(splitText);
@@ -578,18 +644,29 @@ class PureDocxProposalGenerator {
             children.push(new TextRun({ text: 'Klick', size: 18, color: '0066cc', underline: {} }));
           }
           
-          return new Paragraph({
-            bullet: { level: 0 },
-            spacing: { after: 80 },
-            children: children,
-          });
+          paragraphs.push(
+            new Paragraph({
+              bullet: { level: 0 },
+              spacing: { after: 80 },
+              children: children,
+            })
+          );
+        } else {
+          paragraphs.push(
+            new Paragraph({
+              bullet: { level: 0 },
+              spacing: { after: 80 },
+              children: [new TextRun({ text: item, size: 18 })],
+            })
+          );
         }
-        return new Paragraph({
-          bullet: { level: 0 },
-          spacing: { after: 80 },
-          children: [new TextRun({ text: item, size: 18 })],
-        });
-      }),
+      }
+    });
+    
+    return new TableCell({
+      width: { size: width, type: WidthType.PERCENTAGE },
+      verticalAlign: VerticalAlign.TOP,
+      children: paragraphs,
     });
   }
 
