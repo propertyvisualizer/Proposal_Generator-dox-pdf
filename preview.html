@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Proposal Preview - ExposeProfi.de</title>
+  <script src="/config.js"></script>
   <style>
     * {
       margin: 0;
@@ -1940,8 +1941,8 @@
         
         console.log('Submitting proposal with data:', serverData);
         
-        // Send to local server
-        const apiUrl = 'http://localhost:3000/api/generate-proposal';
+        // Send to local server - use dynamic API URL from config
+        const apiUrl = (window.APP_CONFIG?.API_URL || 'http://localhost:3000') + '/api/generate-proposal';
         
         const response = await fetch(apiUrl, {
           method: 'POST',
@@ -1956,7 +1957,7 @@
           
           // Download the file
           if (result.fileUrl) {
-            const downloadUrl = 'http://localhost:3000' + result.fileUrl;
+            const downloadUrl = (window.APP_CONFIG?.API_URL || 'http://localhost:3000') + result.fileUrl;
             window.open(downloadUrl, '_blank');
           }
         } else {
