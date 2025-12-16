@@ -324,22 +324,46 @@ class PureDocxProposalGenerator {
         new TableCell({
           width: { size: 8, type: WidthType.PERCENTAGE },
           shading: { fill: 'f0f0f0', type: ShadingType.CLEAR },
-          children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: 'Anzahl', bold: true, size: 18 })] })],
+          margins: { top: 50, bottom: 50, left: 100, right: 100 },
+          verticalAlign: VerticalAlign.CENTER,
+          children: [new Paragraph({ 
+            alignment: AlignmentType.CENTER, 
+            spacing: { before: 0, after: 0 },
+            children: [new TextRun({ text: 'Anzahl', bold: true, size: 18 })] 
+          })],
         }),
         new TableCell({
           width: { size: 28, type: WidthType.PERCENTAGE },
           shading: { fill: 'f0f0f0', type: ShadingType.CLEAR },
-          children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: 'Bezeichnung', bold: true, size: 18 })] })],
+          margins: { top: 50, bottom: 50, left: 100, right: 100 },
+          verticalAlign: VerticalAlign.CENTER,
+          children: [new Paragraph({ 
+            alignment: AlignmentType.CENTER, 
+            spacing: { before: 0, after: 0 },
+            children: [new TextRun({ text: 'Bezeichnung', bold: true, size: 18 })] 
+          })],
         }),
         new TableCell({
           width: { size: 54, type: WidthType.PERCENTAGE },
           shading: { fill: 'f0f0f0', type: ShadingType.CLEAR },
-          children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: 'Beschreibung', bold: true, size: 18 })] })],
+          margins: { top: 50, bottom: 50, left: 100, right: 100 },
+          verticalAlign: VerticalAlign.CENTER,
+          children: [new Paragraph({ 
+            alignment: AlignmentType.CENTER, 
+            spacing: { before: 0, after: 0 },
+            children: [new TextRun({ text: 'Beschreibung', bold: true, size: 18 })] 
+          })],
         }),
         new TableCell({
           width: { size: 10, type: WidthType.PERCENTAGE },
           shading: { fill: 'f0f0f0', type: ShadingType.CLEAR },
-          children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: 'Stückpreis netto', bold: true, size: 18 })] })],
+          margins: { top: 50, bottom: 50, left: 100, right: 100 },
+          verticalAlign: VerticalAlign.CENTER,
+          children: [new Paragraph({ 
+            alignment: AlignmentType.CENTER, 
+            spacing: { before: 0, after: 0 },
+            children: [new TextRun({ text: 'Stückpreis netto', bold: true, size: 18 })] 
+          })],
         }),
       ],
     });

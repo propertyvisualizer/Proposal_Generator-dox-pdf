@@ -195,7 +195,7 @@ app.post('/api/generate-proposal', async (req, res) => {
 
     // Send data to n8n webhook
     const webhookPayload = {
-      offerNumber: offerNumber,
+      offerNumber: generator.offerNumber,
       clientInfo: {
         companyName: clientInfo.companyName,
         street: clientInfo.street,
