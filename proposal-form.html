@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Genrate Client Proposals</title>
     <script src="/config.js"></script>
+    <script src="/proposal-config.js"></script>
     <style>
         * {
             margin: 0;
@@ -616,10 +617,18 @@
                 <div class="form-grid">
                     <div class="form-group">
                         <label for="clientNumber">Client Number</label>
-                        <input type="text" id="clientNumber" placeholder="e.g. CLI-2025-001">
-                        <span class="helper-text">Optional: Internal client reference number</span>
+                        <input type="text" id="clientNumber" placeholder="e.g. CL-2025-001">
+                        <span class="helper-text">Enter client number to fetch data from database</span>
                     </div>
                     <div class="form-group">
+                        <label for="clientId">Client / Company *</label>
+                        <select id="clientId">
+                            <option value="">Select Client...</option>
+                            <option value="manual">+ Enter Manually</option>
+                        </select>
+                        <span class="helper-text">Select from database or enter manually</span>
+                    </div>
+                    <div class="form-group" id="companyNameGroup">
                         <label for="companyName">Company Name *</label>
                         <input type="text" id="companyName" required placeholder="e.g. Sample Company GmbH">
                     </div>
@@ -668,13 +677,22 @@
                         <input type="text" id="projectName" placeholder="e.g. Sunshine Residential Complex">
                     </div>
                     <div class="form-group">
-                        <label for="unitCount">Number of Units</label>
-                        <input type="number" id="unitCount" placeholder="e.g. 24">
+                        <label for="projectType">Project Type *</label>
+                        <select id="projectType" required>
+                            <option value="">Select Project Type...</option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="customProjectTypeGroup" style="display:none;">
+                        <label for="customProjectType">Custom Project Type</label>
+                        <input type="text" id="customProjectType" placeholder="Enter custom project type">
                     </div>
                     <div class="form-group">
-                        <label for="deliveryDays">Delivery Time (Working Days) *</label>
-                        <input type="number" id="deliveryDays" required value="14">
+                        <label for="deliveryTime">Delivery Time *</label>
+                        <input type="text" id="deliveryTime" required readonly value="Calculated automatically" style="background: #f5f7fa; cursor: not-allowed;">
+                        <span class="helper-text">Auto-calculated based on selected services</span>
                     </div>
+                    <input type="hidden" id="deliveryDaysMin" value="0">
+                    <input type="hidden" id="deliveryDaysMax" value="0">
                     <div class="form-group">
                         <label for="offerValidUntil">Offer Valid Until *</label>
                         <input type="date" id="offerValidUntil" required>
@@ -1034,10 +1052,42 @@
                 </button>
             </div>
 
+            <!-- Discount Section -->
+            <div class="section">
+                <h2 class="section-title">💸 Discount (Optional)</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="discountType">Discount Type</label>
+                        <select id="discountType">
+                            <option value="">No Discount</option>
+                            <option value="percentage">Percentage (%)</option>
+                            <option value="fixed">Fixed Amount (EUR)</option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="discountAmountGroup" style="display:none;">
+                        <label for="discountAmount">Discount Value</label>
+                        <input type="number" id="discountAmount" placeholder="0" step="0.01" min="0">
+                        <span class="helper-text" id="discountHelper">Enter discount value</span>
+                    </div>
+                    <div class="form-group" id="discountDescGroup" style="display:none;" style="grid-column: 1 / -1;">
+                        <label for="discountDescription">Discount Description</label>
+                        <input type="text" id="discountDescription" placeholder="e.g. Mengenrabatt, Sonderaktion">
+                    </div>
+                </div>
+            </div>
+
             <!-- Summary -->
             <div class="section">
                 <h2 class="section-title">💰 Summary</h2>
                 <div class="summary-box">
+                    <div class="summary-row">
+                        <span>Subtotal Net:</span>
+                        <span id="subtotalNet">0,00 €</span>
+                    </div>
+                    <div class="summary-row" id="discountRow" style="display:none;">
+                        <span>Discount (<span id="discountDisplayType"></span>):</span>
+                        <span id="discountDisplay">0,00 €</span>
+                    </div>
                     <div class="summary-row">
                         <span>Total Net Price:</span>
                         <span id="totalNet">0,00 €</span>
@@ -1299,7 +1349,7 @@
         });
 
         function updateCalculations() {
-            let totalNet = 0;
+            let subtotalNet = 0;
 
             document.querySelectorAll('.quantity-input').forEach(input => {
                 const service = input.dataset.service;
@@ -1323,10 +1373,34 @@
                         priceDisplay.textContent = formatPrice(serviceTotal);
                     }
                     
-                    totalNet += serviceTotal;
+                    subtotalNet += serviceTotal;
                 }
             });
 
+            // Update subtotal
+            document.getElementById('subtotalNet').textContent = formatPrice(subtotalNet);
+
+            // Calculate discount
+            let discountAmount = 0;
+            const discountType = document.getElementById('discountType').value;
+            const discountValue = parseFloat(document.getElementById('discountAmount').value) || 0;
+            
+            if (discountType && discountValue > 0) {
+                if (discountType === 'percentage') {
+                    discountAmount = subtotalNet * (discountValue / 100);
+                    document.getElementById('discountDisplayType').textContent = discountValue + '%';
+                } else if (discountType === 'fixed') {
+                    discountAmount = discountValue;
+                    document.getElementById('discountDisplayType').textContent = 'Fixed';
+                }
+                document.getElementById('discountRow').style.display = '';
+                document.getElementById('discountDisplay').textContent = '- ' + formatPrice(discountAmount);
+            } else {
+                document.getElementById('discountRow').style.display = 'none';
+            }
+
+            // Calculate final totals
+            const totalNet = subtotalNet - discountAmount;
             const totalVat = totalNet * 0.19;
             const totalGross = totalNet + totalVat;
 
@@ -1787,6 +1861,12 @@
         }
 
         function collectFormData() {
+            // Helper function to safely get element value
+            const getElementValue = (id, defaultValue = '') => {
+                const element = document.getElementById(id);
+                return element ? element.value : defaultValue;
+            };
+            
             // Calculate totals
             let totalNet = 0;
             const services = [];
@@ -1831,27 +1911,44 @@
                 }
             });
 
-            const totalVat = totalNet * 0.19;
-            const totalGross = totalNet + totalVat;
+            // Calculate discount
+            let discountAmount = 0;
+            const discountType = getElementValue('discountType');
+            const discountValue = parseFloat(getElementValue('discountAmount')) || 0;
+            const discountDescription = getElementValue('discountDescription', 'Rabatt');
+            
+            if (discountType && discountValue > 0) {
+                if (discountType === 'percentage') {
+                    discountAmount = totalNet * (discountValue / 100);
+                } else if (discountType === 'fixed') {
+                    discountAmount = discountValue;
+                }
+            }
+
+            // Calculate final totals with discount
+            const finalTotalNet = totalNet - discountAmount;
+            const totalVat = finalTotalNet * 0.19;
+            const totalGross = finalTotalNet + totalVat;
 
             const today = new Date();
             const dateStr = today.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' });
             
-            return {
+            const result = {
                 clientInfo: {
-                    clientNumber: document.getElementById('clientNumber').value || '',
-                    companyName: document.getElementById('companyName').value || 'Company',
-                    street: document.getElementById('street').value || 'Street',
-                    postalCode: document.getElementById('postalCode').value || 'ZIP',
-                    city: document.getElementById('city').value || 'City',
-                    country: document.getElementById('country').value || 'Deutschland'
+                    clientNumber: getElementValue('clientNumber'),
+                    companyName: getElementValue('companyName', 'Company'),
+                    street: getElementValue('street', 'Street'),
+                    postalCode: getElementValue('postalCode', 'ZIP'),
+                    city: getElementValue('city', 'City'),
+                    country: getElementValue('country', 'Deutschland')
                 },
                 projectInfo: {
-                    projectNumber: document.getElementById('projectNumber').value || '',
-                    projectName: document.getElementById('projectName').value || '',
-                    unitCount: document.getElementById('unitCount').value || '',
-                    deliveryDays: document.getElementById('deliveryDays').value || 'XXX',
-                    offerValidUntil: document.getElementById('offerValidUntil').value || 'XX.XX.25',
+                    projectNumber: getElementValue('projectNumber'),
+                    projectName: getElementValue('projectName'),
+                    unitCount: getElementValue('unitCount'),
+                    deliveryDays: getElementValue('deliveryDays', 'XXX'),
+                    offerValidUntil: getElementValue('offerValidUntil', 'XX.XX.25'),
+                    sharepointUrl: getElementValue('sharepointUrl'),
                     date: dateStr,
                     MM: String(today.getMonth() + 1).padStart(2, '0'),
                     DD: String(today.getDate()).padStart(2, '0')
@@ -1859,7 +1956,8 @@
                 services: services,
                 images: collectImageData(),
                 pricing: {
-                    totalNetPrice: formatPriceForJSON(totalNet),
+                    subtotalNet: formatPriceForJSON(totalNet),
+                    totalNetPrice: formatPriceForJSON(finalTotalNet),
                     totalVat: formatPriceForJSON(totalVat),
                     totalGrossPrice: formatPriceForJSON(totalGross)
                 },
@@ -1867,6 +1965,18 @@
                     signatureName: 'Christopher Helm'
                 }
             };
+            
+            // Add discount info if applicable
+            if (discountType && discountValue > 0) {
+                result.pricing.discount = {
+                    type: discountType,
+                    value: discountValue,
+                    amount: formatPriceForJSON(discountAmount),
+                    description: discountDescription
+                };
+            }
+            
+            return result;
         }
 
         function copyJSON() {
@@ -1899,31 +2009,46 @@
 
         // Preview proposal function
         function previewProposal() {
-            // Validate required fields
-            const companyName = document.getElementById('companyName').value;
-            const street = document.getElementById('street').value;
-            const postalCode = document.getElementById('postalCode').value;
-            const city = document.getElementById('city').value;
-            const country = document.getElementById('country').value;
+            try {
+                console.log('Preview button clicked');
+                
+                // Validate required fields
+                const companyName = document.getElementById('companyName').value;
+                const street = document.getElementById('street').value;
+                const postalCode = document.getElementById('postalCode').value;
+                const city = document.getElementById('city').value;
+                const country = document.getElementById('country').value;
 
-            if (!companyName || !street || !postalCode || !city || !country) {
-                alert('Please fill in all required client information fields.');
-                return;
+                console.log('Client info:', { companyName, street, postalCode, city, country });
+
+                if (!companyName || !street || !postalCode || !city || !country) {
+                    alert('Please fill in all required client information fields.');
+                    return;
+                }
+
+                // Collect form data
+                console.log('Collecting form data...');
+                const data = collectFormData();
+                console.log('Form data collected:', data);
+
+                // Check if at least one service is selected
+                if (data.services.length === 0) {
+                    alert('Please select at least one service.');
+                    return;
+                }
+
+                // Store data in localStorage for preview
+                console.log('Storing data in localStorage...');
+                localStorage.setItem('proposalPreviewData', JSON.stringify(data));
+                console.log('Data stored successfully');
+
+                // Open preview page
+                console.log('Opening preview page...');
+                window.open('preview.html', '_blank');
+            } catch (error) {
+                console.error('Error in previewProposal:', error);
+                alert('An error occurred while preparing the preview. Check the console for details.');
             }
-
-            // Check if at least one service is selected
-            const services = collectFormData().services;
-            if (services.length === 0) {
-                alert('Please select at least one service.');
-                return;
-            }
-
-            // Store data in localStorage for preview
-            const data = collectFormData();
-            localStorage.setItem('proposalPreviewData', JSON.stringify(data));
-
-            // Open preview page
-            window.open('preview.html', '_blank');
         }
 
         // Form submission - now deprecated in favor of preview
@@ -1932,17 +2057,298 @@
             alert('Please use the "Preview Proposal" button to view and generate your proposal.');
         });
 
-        // Set default date (2 weeks from now)
-        const twoWeeksLater = new Date();
-        twoWeeksLater.setDate(twoWeeksLater.getDate() + 14);
-        document.getElementById('offerValidUntil').valueAsDate = twoWeeksLater;
+        // ========== SUPABASE INTEGRATION ==========
+        let supabaseClient = null;
+        
+        async function initializeSupabase() {
+            try {
+                // DISABLED FOR TESTING - Database connection temporarily disabled
+                console.log('Database connection disabled for testing - using manual entry only');
+                return;
+                
+                // Dynamically import Supabase client
+                const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm');
+                
+                // Get credentials from environment
+                const response = await fetch(`${window.API_CONFIG?.baseUrl || 'http://localhost:3003'}/api/config`);
+                const config = await response.json();
+                
+                supabaseClient = createClient(config.supabaseUrl, config.supabaseKey);
+                
+                // Load companies and clients
+                await loadCompaniesAndClients();
+            } catch (error) {
+                console.error('Failed to initialize Supabase:', error);
+                console.log('Continuing in manual entry mode');
+            }
+        }
+        
+        async function loadCompaniesAndClients() {
+            if (!supabaseClient) return;
+            
+            try {
+                // Fetch clients with company information
+                const { data: clients, error } = await supabaseClient
+                    .from('v_proposals_full')
+                    .select('client_id, contact_name, company_name, company_id')
+                    .order('company_name');
+                
+                if (error) throw error;
+                
+                const clientSelect = document.getElementById('clientId');
+                
+                // Clear existing options except first two
+                while (clientSelect.options.length > 2) {
+                    clientSelect.remove(2);
+                }
+                
+                // Add clients as options
+                const uniqueClients = {};
+                clients?.forEach(client => {
+                    const key = client.company_id || client.company_name;
+                    if (!uniqueClients[key]) {
+                        uniqueClients[key] = {
+                            id: client.client_id || client.company_id,
+                            name: client.company_name || 'Unknown',
+                            companyId: client.company_id
+                        };
+                    }
+                });
+                
+                Object.values(uniqueClients).forEach(client => {
+                    const option = document.createElement('option');
+                    option.value = client.id;
+                    option.textContent = client.name;
+                    option.dataset.companyId = client.companyId;
+                    option.dataset.companyName = client.name;
+                    clientSelect.appendChild(option);
+                });
+                
+            } catch (error) {
+                console.error('Error loading clients:', error);
+            }
+        }
+        
+        // Handle client selection
+        document.getElementById('clientId')?.addEventListener('change', async function(e) {
+            const selectedOption = e.target.options[e.target.selectedIndex];
+            const clientId = e.target.value;
+            const companyNameInput = document.getElementById('companyName');
+            const companyNameGroup = document.getElementById('companyNameGroup');
+            
+            if (clientId === 'manual' || clientId === '') {
+                // Manual entry mode - enable company name input and clear all fields
+                companyNameInput.readOnly = false;
+                companyNameInput.style.background = '';
+                companyNameInput.style.cursor = '';
+                companyNameInput.value = '';
+                document.getElementById('street').value = '';
+                document.getElementById('postalCode').value = '';
+                document.getElementById('city').value = '';
+                document.getElementById('country').value = '';
+                companyNameGroup.style.display = 'block';
+                return;
+            }
+            
+            if (clientId) {
+                // Database selection mode - populate from database
+                const companyName = selectedOption.dataset.companyName;
+                companyNameInput.value = companyName || '';
+                companyNameInput.readOnly = true;
+                companyNameInput.style.background = '#f5f7fa';
+                companyNameInput.style.cursor = 'not-allowed';
+                companyNameGroup.style.display = 'block';
+                
+                // Load company details
+                if (supabaseClient && selectedOption.dataset.companyId) {
+                    try {
+                        const { data, error } = await supabaseClient
+                            .from('companies')
+                            .select('*')
+                            .eq('id', selectedOption.dataset.companyId)
+                            .single();
+                        
+                        if (data) {
+                            document.getElementById('street').value = data.street || '';
+                            document.getElementById('postalCode').value = data.postal_code || '';
+                            document.getElementById('city').value = data.city || '';
+                            document.getElementById('country').value = data.country || 'Deutschland';
+                        }
+                    } catch (error) {
+                        console.error('Error loading company details:', error);
+                    }
+                }
+            }
+        });
+        
+        // Initialize project type dropdown
+        function initializeProjectTypes() {
+            const projectTypeSelect = document.getElementById('projectType');
+            CONFIG.projectTypes.forEach(type => {
+                const option = document.createElement('option');
+                option.value = type;
+                option.textContent = type;
+                projectTypeSelect.appendChild(option);
+            });
+            
+            // Handle custom project type
+            projectTypeSelect.addEventListener('change', function(e) {
+                const customGroup = document.getElementById('customProjectTypeGroup');
+                if (e.target.value === 'Custom') {
+                    customGroup.style.display = 'block';
+                } else {
+                    customGroup.style.display = 'none';
+                }
+            });
+        }
+        
+        // Calculate delivery time based on selected services
+        function calculateDeliveryTime() {
+            let totalMinDays = 0;
+            let totalMaxDays = 0;
+            
+            // Get all checked services
+            const checkedServices = document.querySelectorAll('.service-item input[type=\"checkbox\"]:checked');
+            
+            checkedServices.forEach(checkbox => {
+                const serviceId = checkbox.id.replace('check-', '');
+                const quantityInput = document.querySelector(`input.quantity-input[data-service=\"${serviceId}\"]`);
+                const quantity = parseInt(quantityInput?.value || 0);
+                
+                if (quantity > 0 && CONFIG.deliveryTimeRules[serviceId]) {
+                    const rule = CONFIG.deliveryTimeRules[serviceId];
+                    const serviceTime = rule.baseTime + (rule.additionalPerUnit * Math.max(0, quantity - 1));
+                    totalMinDays = Math.max(totalMinDays, serviceTime);
+                    totalMaxDays = Math.max(totalMaxDays, serviceTime + 3); // Add 3 days buffer for max
+                }
+            });
+            
+            // Set minimum delivery time
+            if (totalMinDays === 0) {
+                totalMinDays = 7;
+                totalMaxDays = 14;
+            }
+            
+            document.getElementById('deliveryDaysMin').value = totalMinDays;
+            document.getElementById('deliveryDaysMax').value = totalMaxDays;
+            document.getElementById('deliveryTime').value = `${totalMinDays} - ${totalMaxDays} Werktage`;
+        }
+        
+        // Update calculations to include delivery time
+        const originalUpdateCalculations = updateCalculations;
+        updateCalculations = function() {
+            originalUpdateCalculations();
+            calculateDeliveryTime();
+        };
+
+        // Set default date (1 week from now)
+        const oneWeekLater = new Date();
+        oneWeekLater.setDate(oneWeekLater.getDate() + CONFIG.offerValidityDays);
+        document.getElementById('offerValidUntil').valueAsDate = oneWeekLater;
+
+        // Handle client number lookup
+        document.getElementById('clientNumber').addEventListener('blur', async function(e) {
+            const clientNumber = e.target.value.trim();
+            
+            // Remove any existing indicators
+            const existingIndicators = e.target.parentElement.querySelectorAll('span[style*="color"]');
+            existingIndicators.forEach(ind => ind.remove());
+            
+            if (!clientNumber) return;
+            
+            // Validate that client number is exactly 5 digits
+            if (!/^\d{5}$/.test(clientNumber)) {
+                const indicator = document.createElement('span');
+                indicator.style.color = 'red';
+                indicator.style.marginLeft = '10px';
+                indicator.style.fontSize = '12px';
+                indicator.textContent = '⚠ Client number must be 5 digits';
+                e.target.parentElement.appendChild(indicator);
+                setTimeout(() => indicator.remove(), 3000);
+                return;
+            }
+            
+            console.log('Looking up client number:', clientNumber);
+            
+            try {
+                // Fetch client details from server
+                const response = await fetch(`${window.API_CONFIG?.API_URL || 'http://localhost:3003'}/api/client-lookup/${encodeURIComponent(clientNumber)}`);
+                
+                if (response.ok) {
+                    const clientData = await response.json();
+                    
+                    if (clientData && clientData.success && clientData.data) {
+                        const client = clientData.data;
+                        console.log('Client data found:', client);
+                        
+                        // Auto-fill company name only (addresses will be entered manually)
+                        document.getElementById('companyName').value = client.company_name || '';
+                        
+                        // Show success indicator with company name
+                        const indicator = document.createElement('span');
+                        indicator.style.color = 'green';
+                        indicator.style.marginLeft = '10px';
+                        indicator.textContent = '✓ ' + (client.company_name || 'Client found');
+                        e.target.parentElement.appendChild(indicator);
+                        setTimeout(() => indicator.remove(), 3000);
+                    } else {
+                        console.log('Client not found');
+                        // Show not found indicator
+                        const indicator = document.createElement('span');
+                        indicator.style.color = 'orange';
+                        indicator.style.marginLeft = '10px';
+                        indicator.textContent = '⚠ Client not found';
+                        e.target.parentElement.appendChild(indicator);
+                        setTimeout(() => indicator.remove(), 3000);
+                    }
+                } else {
+                    console.error('Error fetching client data:', response.statusText);
+                }
+            } catch (error) {
+                console.error('Error looking up client:', error);
+            }
+        });
+
+        // Handle discount type change
+        document.getElementById('discountType').addEventListener('change', function(e) {
+            const value = e.target.value;
+            const amountGroup = document.getElementById('discountAmountGroup');
+            const descGroup = document.getElementById('discountDescGroup');
+            const helper = document.getElementById('discountHelper');
+            
+            if (value) {
+                amountGroup.style.display = 'block';
+                descGroup.style.display = 'block';
+                if (value === 'percentage') {
+                    helper.textContent = 'Enter percentage (e.g., 10 for 10%)';
+                } else {
+                    helper.textContent = 'Enter amount in EUR';
+                }
+            } else {
+                amountGroup.style.display = 'none';
+                descGroup.style.display = 'none';
+            }
+            updateCalculations();
+        });
+
+        // Handle discount amount/description change
+        document.getElementById('discountAmount').addEventListener('input', updateCalculations);
+        document.getElementById('discountDescription').addEventListener('input', saveFormData);
 
         // Initialize on page load
-        window.addEventListener('DOMContentLoaded', function() {
+        window.addEventListener('DOMContentLoaded', async function() {
+            initializeProjectTypes(); // Initialize project types dropdown
+            await initializeSupabase(); // Initialize Supabase connection
             initializeBulletUI(); // Initialize bullet UI for all services
             loadSavedData(); // Load saved data
             startAutoSave(); // Start auto-save
             updateCalculations();
+            
+            // Set manual entry as default mode
+            document.getElementById('clientId').value = 'manual';
+            document.getElementById('companyName').readOnly = false;
+            document.getElementById('companyName').style.background = '';
+            document.getElementById('companyName').style.cursor = '';
         });
 
         // Save before leaving page

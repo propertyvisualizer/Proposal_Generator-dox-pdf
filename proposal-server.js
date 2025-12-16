@@ -2,46 +2,13 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
-const multer = require('multer');
 const fs = require('fs');
 const axios = require('axios');
 const { PureDocxProposalGenerator } = require('./pure-docx-generator');
 const https = require('https');
-const {getClientDetails} = require('./utils.js')
+const {getClientDetails, save_proposal_detail} = require('./utils.js')
 const app = express();
 const PORT = process.env.PORT || 3000;
-
-// Create uploads directory if it doesn't exist
-const uploadsDir = path.join(__dirname, 'uploads');
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir, { recursive: true });
-}
-
-// Configure multer for file uploads
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, uploadsDir);
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, uniqueSuffix + '-' + file.originalname);
-  }
-});
-
-const upload = multer({
-  storage: storage,
-  limits: { 
-    fileSize: 10 * 1024 * 1024, // 10MB file size limit
-    fieldSize: 25 * 1024 * 1024  // 25MB field size limit (for base64 images in JSON)
-  },
-  fileFilter: (req, file, cb) => {
-    if (file.mimetype.startsWith('image/')) {
-      cb(null, true);
-    } else {
-      cb(new Error('Only image files are allowed!'));
-    }
-  }
-});
 
 // Middleware
 app.use(cors());
@@ -67,56 +34,111 @@ window.APP_CONFIG = {
   `);
 });
 
+// API endpoint for config (JSON) - for Supabase credentials
+app.get('/api/config', (req, res) => {
+  res.json({
+    supabaseUrl: process.env.SUPABASE_URL || process.env.supabase_url,
+    supabaseKey: process.env.SUPABASE_ANON_KEY || process.env.supabase_key,
+  });
+});
+
 // Serve the form
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'proposal-form.html'));
 });
 
+// API endpoint to lookup client by client number
+app.get('/api/client-lookup/:clientNumber', async (req, res) => {
+  try {
+    const clientNumber = req.params.clientNumber;
+    console.log('🔍 Looking up client:', clientNumber);
+    
+    const clientDetails = await getClientDetails(clientNumber);
+    
+    if (clientDetails && clientDetails.length > 0) {
+      res.json({
+        success: true,
+        data: clientDetails[0]
+      });
+    } else {
+      res.json({
+        success: false,
+        message: 'Client not found'
+      });
+    }
+  } catch (error) {
+    console.error('❌ Error looking up client:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
 // API endpoint to generate proposal
-app.post('/api/generate-proposal', upload.any(), async (req, res) => {
+app.post('/api/generate-proposal', async (req, res) => {
   try {
     console.log('📥 Received proposal request');
-    console.log('Body:', req.body);
-    console.log('Files:', req.files);
     
-    // Parse JSON data from form
-    const data = JSON.parse(req.body.data);
+    // Parse JSON data
+    const data = req.body;
     const { clientInfo, projectInfo, services, pricing, signature, images: imageMetadata } = data;
     
-    // Process uploaded images
+    // Validate required data
+    if (!clientInfo) {
+      console.error('❌ Missing clientInfo in request');
+      return res.status(400).json({ 
+        success: false, 
+        error: 'Missing client information' 
+      });
+    }
+    
+    // Fetch client details from database if client_id is provided
+    let dbClientData = null;
+    let clientFolderName = 'default_client';
+    
+    if (clientInfo.clientNumber) {
+      const clientId = clientInfo.clientNumber;
+      console.log('🔍 Fetching client details from database for:', clientId);
+      
+      const clientDetails = await getClientDetails(clientId);
+      
+      if (clientDetails && clientDetails.length > 0) {
+        dbClientData = clientDetails[0];
+        console.log('✅ Client data retrieved:', dbClientData);
+        
+        // Create folder name: clientid_companyname
+        const sanitize = (str) => str ? String(str).replace(/[^a-zA-Z0-9]/g, '_').substring(0, 50) : 'unknown';
+        clientFolderName = `${sanitize(dbClientData.client_id || clientId)}_${sanitize(dbClientData.company_name)}`;
+        
+        // Use database company name if available, but keep manually entered addresses
+        clientInfo.companyName = dbClientData.company_name || clientInfo.companyName;
+      } else {
+        console.log('⚠️ Client not found in database, using form data');
+        const sanitize = (str) => str ? String(str).replace(/[^a-zA-Z0-9]/g, '_').substring(0, 50) : 'unknown';
+        clientFolderName = `${sanitize(clientId)}_${sanitize(clientInfo.companyName)}`;
+      }
+    } else {
+      // No client ID provided, create folder from company name
+      const sanitize = (str) => str ? String(str).replace(/[^a-zA-Z0-9]/g, '_').substring(0, 50) : 'unknown';
+      clientFolderName = `${sanitize(clientInfo.companyName)}_${Date.now()}`;
+    }
+    
+    console.log('📁 Client folder name:', clientFolderName);
+    
+    // Process images (base64 encoded)
     const images = [];
     
-    // Handle file uploads (from direct form submission)
-    if (req.files && req.files.length > 0 && imageMetadata && imageMetadata.length > 0) {
-      req.files.forEach((file, index) => {
-        if (imageMetadata[index]) {
-          images.push({
-            title: imageMetadata[index].title || '',
-            description: imageMetadata[index].description || '',
-            imagePath: file.path
-          });
-        }
-      });
-    } 
-    // Handle base64 images (from preview page)
-    else if (imageMetadata && imageMetadata.length > 0) {
+    // Handle base64 images
+    if (imageMetadata && imageMetadata.length > 0) {
       imageMetadata.forEach((imgData, index) => {
         if (imgData.imageData) {
-          // Convert base64 to file
-          const base64Data = imgData.imageData.replace(/^data:image\/\w+;base64,/, '');
-          const buffer = Buffer.from(base64Data, 'base64');
-          
-          // Save to temp file
-          const uniqueSuffix = Date.now() + '-' + index;
-          const ext = imgData.fileType ? imgData.fileType.split('/')[1] : 'png';
-          const tempFilePath = path.join(uploadsDir, `${uniqueSuffix}.${ext}`);
-          
-          fs.writeFileSync(tempFilePath, buffer);
-          
+          // Store base64 data directly or convert if needed
           images.push({
             title: imgData.title || '',
             description: imgData.description || '',
-            imagePath: tempFilePath
+            imageData: imgData.imageData,
+            fileType: imgData.fileType || 'image/png'
           });
         }
       });
@@ -134,9 +156,11 @@ app.post('/api/generate-proposal', upload.any(), async (req, res) => {
       DD: projectInfo.DD,
       offerValidUntil: projectInfo.offerValidUntil,
       deliveryDays: projectInfo.deliveryDays,
+      subtotalNet: pricing.subtotalNet,
       totalNetPrice: pricing.totalNetPrice,
       totalVat: pricing.totalVat,
       totalGrossPrice: pricing.totalGrossPrice,
+      discount: pricing.discount || null,
       signatureName: signature?.signatureName || 'Christopher Helm',
       images: images,
       services: services || []
@@ -144,48 +168,71 @@ app.post('/api/generate-proposal', upload.any(), async (req, res) => {
     
     console.log('📄 Generating DOCX with', images.length, 'images');
     
-    // Generate filename
-    const dateStr = `${projectInfo.date}`.replace(/\./g, '-');
+    // Create client-specific output directory
+    const clientOutputDir = path.join(__dirname, 'output', clientFolderName);
+    if (!fs.existsSync(clientOutputDir)) {
+      fs.mkdirSync(clientOutputDir, { recursive: true });
+      console.log('📁 Created client directory:', clientOutputDir);
+    }
+    
+    // Generate filename: YYMMDD_Angebot_CompanyName ExposéProfi
+    const YY = projectInfo.date ? projectInfo.date.split('.')[2].slice(-2) : '25';
+    const MM = projectInfo.MM || '01';
+    const DD = projectInfo.DD || '01';
     const safeCompanyName = clientInfo.companyName
-      .replace(/[^a-zA-Z0-9]/g, '_')
-      .substring(0, 30);
-    const offerNumber = `2025-${projectInfo.MM}-${projectInfo.DD}-1`;
-    const filename = `${dateStr}_Angebot_${offerNumber}_${safeCompanyName}.docx`;
+      .replace(/[^a-zA-Z0-9äöüÄÖÜß\s&]/g, '')
+      .substring(0, 50);
+    const filename = `${YY}${MM}${DD}_Angebot_${safeCompanyName} ExposéProfi.docx`;
     
     // Generate DOCX
     const generator = new PureDocxProposalGenerator(docxData);
-    const outputPath = path.join(__dirname, 'output', filename);
-    const logoPath = path.join(__dirname, '6363f6e55943431f0f248941_logo exposeprofi blau-p-500.png');
+    const outputPath = path.join(clientOutputDir, filename);
+    const logoPath = path.join(__dirname, 'logo_2.png');
     
     await generator.save(outputPath, logoPath);
     
     console.log('✅ Proposal generated:', outputPath);
-    
-    // Clean up uploaded and temporary files after processing
-    if (req.files) {
-      req.files.forEach(file => {
-        try {
-          fs.unlinkSync(file.path);
-        } catch (err) {
-          console.error('Error deleting temp file:', err);
-        }
-      });
+
+    // Save proposal to database
+    const proposalDbData = {
+      client_id: dbClientData ? dbClientData.client_id : null,
+      company_name: clientInfo.companyName,
+      street_no: clientInfo.street,
+      city: clientInfo.city,
+      country: clientInfo.country || 'Deutschland',
+      postal_code: clientInfo.postalCode,
+      project_number: projectInfo.projectNumber || null,
+      project_name: projectInfo.projectName || null,
+      project_type: projectInfo.projectType || null,
+      offer_number: generator.offerNumber,
+      delivery_time_min: projectInfo.deliveryDays ? parseInt(projectInfo.deliveryDays.split('-')[0]) : null,
+      delivery_time_max: projectInfo.deliveryDays ? parseInt(projectInfo.deliveryDays.split('-')[1]) : null,
+      services: services,
+      pricing: {
+        subtotalNet: pricing.subtotalNet,
+        totalNetPrice: pricing.totalNetPrice,
+        totalVat: pricing.totalVat,
+        totalGrossPrice: pricing.totalGrossPrice,
+        discount: pricing.discount
+      },
+      discount_type: pricing.discount?.type || null,
+      discount_value: pricing.discount?.amount || null,
+      currency: 'EUR',
+      total_price: parseFloat(pricing.totalGrossPrice?.replace(/[^0-9.,]/g, '').replace('.', '').replace(',', '.')) || null,
+      image_urls: imageMetadata?.map(img => ({ title: img.title, description: img.description })) || [],
+      document_url: null
+    };
+
+    const savedProposal = await save_proposal_detail(proposalDbData);
+    if (savedProposal) {
+      console.log('✅ Proposal saved to database with ID:', savedProposal[0]?.id);
+    } else {
+      console.warn('⚠️ Failed to save proposal to database');
     }
-    
-    // Clean up base64-converted image files
-    images.forEach(img => {
-      if (img.imagePath && img.imagePath.includes(uploadsDir)) {
-        try {
-          fs.unlinkSync(img.imagePath);
-        } catch (err) {
-          console.error('Error deleting temp image:', err);
-        }
-      }
-    });
 
     // Send data to n8n webhook
     const webhookPayload = {
-      offerNumber: offerNumber,
+      offerNumber: generator.offerNumber,
       clientInfo: {
         companyName: clientInfo.companyName,
         street: clientInfo.street,
@@ -247,24 +294,18 @@ app.post('/api/generate-proposal', upload.any(), async (req, res) => {
       success: true,
       message: 'Proposal generated successfully',
       filename: filename,
-      fileUrl: `/output/${filename}`,
-      offerNumber: offerNumber,
+      fileUrl: `/output/${clientFolderName}/${filename}`,
+      filePath: outputPath,
+      clientFolder: clientFolderName,
+      offerNumber: generator.offerNumber,
       clientName: clientInfo.companyName,
       totalAmount: pricing.totalGrossPrice,
-      imagesIncluded: images.length
+      imagesIncluded: images.length,
+      clientDataFromDb: dbClientData ? true : false
     });
     
   } catch (error) {
     console.error('❌ Error generating proposal:', error);
-    if (req.files) {
-      req.files.forEach(file => {
-        try {
-          fs.unlinkSync(file.path);
-        } catch (err) {
-          console.error('Error deleting temp file:', err);
-        }
-      });
-    }
     
     res.status(500).json({
       success: false,
