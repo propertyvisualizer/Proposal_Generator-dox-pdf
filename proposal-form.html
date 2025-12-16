@@ -617,23 +617,15 @@
                 <div class="form-grid">
                     <div class="form-group">
                         <label for="clientNumber">Client Number</label>
-                        <input type="text" id="clientNumber" placeholder="e.g. CL-2025-001">
-                        <span class="helper-text">Enter client number to fetch data from database</span>
-                    </div>
-                    <div class="form-group">
-                        <label for="clientId">Client / Company *</label>
-                        <select id="clientId">
-                            <option value="">Select Client...</option>
-                            <option value="manual">+ Enter Manually</option>
-                        </select>
-                        <span class="helper-text">Select from database or enter manually</span>
+                        <input type="text" id="clientNumber" placeholder="e.g. 12345">
+                        <span class="helper-text">Enter 5-digit client number to auto-fill company name</span>
                     </div>
                     <div class="form-group" id="companyNameGroup">
                         <label for="companyName">Company Name *</label>
                         <input type="text" id="companyName" required placeholder="e.g. Sample Company GmbH">
                     </div>
                     <div class="form-group">
-                        <label for="street">Street & Number *</label>
+                        <label for="street">Address *</label>
                         <input type="text" id="street" required placeholder="e.g. Sample Street 123">
                     </div>
                     <div class="form-group">
@@ -2247,7 +2239,7 @@
         document.getElementById('offerValidUntil').valueAsDate = oneWeekLater;
 
         // Handle client number lookup
-        document.getElementById('clientNumber').addEventListener('blur', async function(e) {
+        document.getElementById('clientNumber').addEventListener('input', async function(e) {
             const clientNumber = e.target.value.trim();
             
             // Remove any existing indicators
