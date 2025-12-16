@@ -121,9 +121,9 @@ class PureDocxProposalGenerator {
         margin: {
           top: 1440,       // 1" = 1440 twips
           right: 1440,
-          bottom: 1440,
+          bottom: 1800,    // 1.25" = 1800 twips (increased for footer space)
           left: 1440,
-          footer: 720,     // Footer 0.5" from bottom
+          footer: 900,     // Footer 0.625" from bottom (increased)
         },
       },
     };
@@ -384,9 +384,6 @@ class PureDocxProposalGenerator {
       width: { size: 100, type: WidthType.PERCENTAGE },
       rows: allRows,
       cantSplit: false, // Allow table to break across pages
-      margins: {
-        bottom: 600, // Add bottom margin to prevent touching footer (600 twips = ~0.4 inches)
-      },
     });
   }
 
@@ -1200,11 +1197,9 @@ class PureDocxProposalGenerator {
       }),
       new Table({
         width: { size: 100, type: WidthType.PERCENTAGE },
-        margins: {
-          bottom: 1200,
-        },
         rows: rows,
       }),
+      new Paragraph({ spacing: { after: 2000 }, children: [] }),
     ];
   }
 
@@ -1447,6 +1442,9 @@ class PureDocxProposalGenerator {
           
           // One unified table with all services - will flow across pages automatically
           this.createUnifiedServiceTable(),
+          
+          // Add spacing after table to prevent footer overlap
+          new Paragraph({ spacing: { after: 1800 }, children: [] }),
         ],
       },
       
