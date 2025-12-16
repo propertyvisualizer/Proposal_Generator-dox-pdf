@@ -84,6 +84,15 @@ app.post('/api/generate-proposal', async (req, res) => {
     const data = req.body;
     const { clientInfo, projectInfo, services, pricing, signature, images: imageMetadata } = data;
     
+    // Validate required data
+    if (!clientInfo) {
+      console.error('❌ Missing clientInfo in request');
+      return res.status(400).json({ 
+        success: false, 
+        error: 'Missing client information' 
+      });
+    }
+    
     // Fetch client details from database if client_id is provided
     let dbClientData = null;
     let clientFolderName = 'default_client';
@@ -99,19 +108,19 @@ app.post('/api/generate-proposal', async (req, res) => {
         console.log('✅ Client data retrieved:', dbClientData);
         
         // Create folder name: clientid_companyname
-        const sanitize = (str) => str ? str.replace(/[^a-zA-Z0-9]/g, '_').substring(0, 50) : 'unknown';
+        const sanitize = (str) => str ? String(str).replace(/[^a-zA-Z0-9]/g, '_').substring(0, 50) : 'unknown';
         clientFolderName = `${sanitize(dbClientData.client_id || clientId)}_${sanitize(dbClientData.company_name)}`;
         
         // Use database company name if available, but keep manually entered addresses
         clientInfo.companyName = dbClientData.company_name || clientInfo.companyName;
       } else {
         console.log('⚠️ Client not found in database, using form data');
-        const sanitize = (str) => str ? str.replace(/[^a-zA-Z0-9]/g, '_').substring(0, 50) : 'unknown';
+        const sanitize = (str) => str ? String(str).replace(/[^a-zA-Z0-9]/g, '_').substring(0, 50) : 'unknown';
         clientFolderName = `${sanitize(clientId)}_${sanitize(clientInfo.companyName)}`;
       }
     } else {
       // No client ID provided, create folder from company name
-      const sanitize = (str) => str ? str.replace(/[^a-zA-Z0-9]/g, '_').substring(0, 50) : 'unknown';
+      const sanitize = (str) => str ? String(str).replace(/[^a-zA-Z0-9]/g, '_').substring(0, 50) : 'unknown';
       clientFolderName = `${sanitize(clientInfo.companyName)}_${Date.now()}`;
     }
     

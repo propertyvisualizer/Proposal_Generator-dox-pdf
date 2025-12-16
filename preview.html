@@ -371,31 +371,24 @@
       background: #059669;
     }
 
-    /* Pricing tiers */
-    .pricing-tiers {
-      margin-top: 12px;
-      padding: 8px;
+    /* Pricing tier rows */
+    .pricing-tier-row td {
+      border: 1px solid #333;
+      line-height: 1.3;
+    }
+    
+    .pricing-tier-title-row td {
       background-color: #f8f9fa;
-      border: 1px solid #dee2e6;
-      border-radius: 4px;
-      font-size: 8.5pt;
-    }
-
-    .pricing-tiers-title {
       font-weight: bold;
-      margin-bottom: 6px;
       font-size: 9pt;
-      color: #495057;
+      padding: 6px 8px;
+      border-top: 1px solid #666;
     }
-
-    .pricing-tier-item {
-      padding: 2px 0;
-      line-height: 1.4;
-      color: #212529;
-    }
-
-    .pricing-tier-item:hover {
-      background-color: #e9ecef;
+    
+    .pricing-tier-row:not(.pricing-tier-title-row) td {
+      background-color: #fafbfc;
+      font-size: 8.5pt;
+      padding: 4px 8px 4px 20px;
     }
 
     /* Editable last page fields */
@@ -1279,37 +1272,6 @@
           hint.className = 'edit-hint';
           hint.textContent = 'Click to edit, use buttons to add/delete';
           cellDescription.appendChild(hint);
-          
-          // Add pricing information if available
-          if (serviceInfo) {
-            // Show pricing tiers if available
-            if (serviceInfo.pricingTiers) {
-              const pricingDiv = document.createElement('div');
-              pricingDiv.className = 'pricing-tiers';
-              
-              const title = document.createElement('div');
-              title.className = 'pricing-tiers-title';
-              title.textContent = 'Preisstaffelung:';
-              pricingDiv.appendChild(title);
-              
-              serviceInfo.pricingTiers.forEach(tier => {
-                const tierItem = document.createElement('div');
-                tierItem.className = 'pricing-tier-item';
-                tierItem.textContent = tier.label;
-                pricingDiv.appendChild(tierItem);
-              });
-              
-              cellDescription.appendChild(pricingDiv);
-            }
-            // Show default price note if set and no tiers
-            else if (serviceInfo.defaultPrice) {
-              const priceNote = document.createElement('div');
-              priceNote.className = 'pricing-tiers';
-              priceNote.style.fontSize = '9pt';
-              priceNote.innerHTML = `<strong>Standardpreis:</strong> ${serviceInfo.defaultPrice.toFixed(2)} € pro Einheit`;
-              cellDescription.appendChild(priceNote);
-            }
-          }
         } else {
           cellDescription.textContent = 'Beschreibung nicht verfügbar';
         }
@@ -1332,6 +1294,112 @@
         row.appendChild(cellPrice);
 
         tbody.appendChild(row);
+        
+        // Add pricing tiers as separate rows if available
+        if (serviceInfo) {
+          // Show pricing tiers if available
+          if (serviceInfo.pricingTiers) {
+            // Add title row
+            const tierTitleRow = document.createElement('tr');
+            tierTitleRow.className = 'pricing-tier-row pricing-tier-title-row';
+            
+            // Empty cells for columns 1 and 2
+            const emptyCell1 = document.createElement('td');
+            emptyCell1.className = 'col-number';
+            emptyCell1.innerHTML = '&nbsp;';
+            tierTitleRow.appendChild(emptyCell1);
+            
+            const emptyCell2 = document.createElement('td');
+            emptyCell2.className = 'col-designation';
+            emptyCell2.innerHTML = '&nbsp;';
+            tierTitleRow.appendChild(emptyCell2);
+            
+            // Title in description column
+            const tierTitleCell = document.createElement('td');
+            tierTitleCell.className = 'col-description';
+            tierTitleCell.style.backgroundColor = '#f8f9fa';
+            tierTitleCell.style.fontWeight = 'bold';
+            tierTitleCell.style.fontSize = '9pt';
+            tierTitleCell.style.padding = '6px 8px';
+            tierTitleCell.textContent = 'Preisstaffelung:';
+            tierTitleRow.appendChild(tierTitleCell);
+            
+            // Empty cell for column 4
+            const emptyCell4 = document.createElement('td');
+            emptyCell4.className = 'col-price';
+            emptyCell4.innerHTML = '&nbsp;';
+            tierTitleRow.appendChild(emptyCell4);
+            
+            tbody.appendChild(tierTitleRow);
+            
+            // Add each tier as a row
+            serviceInfo.pricingTiers.forEach(tier => {
+              const tierRow = document.createElement('tr');
+              tierRow.className = 'pricing-tier-row';
+              
+              // Empty cells for columns 1 and 2
+              const tierEmptyCell1 = document.createElement('td');
+              tierEmptyCell1.className = 'col-number';
+              tierEmptyCell1.innerHTML = '&nbsp;';
+              tierRow.appendChild(tierEmptyCell1);
+              
+              const tierEmptyCell2 = document.createElement('td');
+              tierEmptyCell2.className = 'col-designation';
+              tierEmptyCell2.innerHTML = '&nbsp;';
+              tierRow.appendChild(tierEmptyCell2);
+              
+              // Tier info in description column
+              const tierCell = document.createElement('td');
+              tierCell.className = 'col-description';
+              tierCell.style.backgroundColor = '#fafbfc';
+              tierCell.style.fontSize = '8.5pt';
+              tierCell.style.padding = '4px 8px 4px 20px';
+              tierCell.textContent = tier.label;
+              tierRow.appendChild(tierCell);
+              
+              // Empty cell for column 4
+              const tierEmptyCell4 = document.createElement('td');
+              tierEmptyCell4.className = 'col-price';
+              tierEmptyCell4.innerHTML = '&nbsp;';
+              tierRow.appendChild(tierEmptyCell4);
+              
+              tbody.appendChild(tierRow);
+            });
+          }
+          // Show default price note if set and no tiers
+          else if (serviceInfo.defaultPrice) {
+            const priceNoteRow = document.createElement('tr');
+            priceNoteRow.className = 'pricing-tier-row';
+            
+            // Empty cells for columns 1 and 2
+            const noteEmptyCell1 = document.createElement('td');
+            noteEmptyCell1.className = 'col-number';
+            noteEmptyCell1.innerHTML = '&nbsp;';
+            priceNoteRow.appendChild(noteEmptyCell1);
+            
+            const noteEmptyCell2 = document.createElement('td');
+            noteEmptyCell2.className = 'col-designation';
+            noteEmptyCell2.innerHTML = '&nbsp;';
+            priceNoteRow.appendChild(noteEmptyCell2);
+            
+            // Price note in description column
+            const priceNoteCell = document.createElement('td');
+            priceNoteCell.className = 'col-description';
+            priceNoteCell.style.backgroundColor = '#f8f9fa';
+            priceNoteCell.style.fontSize = '9pt';
+            priceNoteCell.style.padding = '6px 8px';
+            priceNoteCell.innerHTML = `<strong>Standardpreis:</strong> ${serviceInfo.defaultPrice.toFixed(2)} € pro Einheit`;
+            priceNoteRow.appendChild(priceNoteCell);
+            
+            // Empty cell for column 4
+            const noteEmptyCell4 = document.createElement('td');
+            noteEmptyCell4.className = 'col-price';
+            noteEmptyCell4.innerHTML = '&nbsp;';
+            priceNoteRow.appendChild(noteEmptyCell4);
+            
+            tbody.appendChild(priceNoteRow);
+          }
+        }
       });
     }
 
@@ -1344,13 +1412,24 @@
       
       const bulletSpan = document.createElement('span');
       bulletSpan.className = 'editable-bullet';
-      bulletSpan.contentEditable = 'true';
-      bulletSpan.textContent = text;
       bulletSpan.dataset.serviceIndex = serviceIndex;
       bulletSpan.dataset.bulletIndex = bulletIndex;
       bulletSpan.dataset.level = level;
-      bulletSpan.addEventListener('blur', updateBulletPoint);
-      bulletSpan.addEventListener('keydown', handleEnterKey);
+      
+      // Check if this is a reference link (Referenzen: KLICK or Referenz: KLICK)
+      const referenceMatch = text.match(/(Referenzen?:\s*)(KLICK|Klick)/i);
+      if (referenceMatch) {
+        // Make it non-editable and show as link
+        bulletSpan.contentEditable = 'false';
+        bulletSpan.innerHTML = referenceMatch[1] + '<a href="#references" style="color: #0066cc; text-decoration: underline; cursor: pointer;">KLICK</a>';
+      } else {
+        // Regular editable bullet
+        bulletSpan.contentEditable = 'true';
+        bulletSpan.textContent = text;
+        bulletSpan.addEventListener('blur', updateBulletPoint);
+        bulletSpan.addEventListener('keydown', handleEnterKey);
+      }
+      
       li.appendChild(bulletSpan);
       
       // Add controls
@@ -2107,9 +2186,6 @@
       try {
         const data = window.proposalData;
         
-        // Create FormData for file uploads
-        const formData = new FormData();
-        
         // Get image files from localStorage (stored during form submission)
         const imageFiles = JSON.parse(localStorage.getItem('proposalImageFiles') || '[]');
         
@@ -2122,8 +2198,6 @@
           signature: data.signature,
           images: data.images || []
         };
-        
-        formData.append('data', JSON.stringify(serverData));
         
         // Note: File objects cannot be stored in localStorage
         // In a real implementation, you would either:
@@ -2138,7 +2212,10 @@
         
         const response = await fetch(apiUrl, {
           method: 'POST',
-          body: formData
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(serverData)
         });
         
         const result = await response.json();

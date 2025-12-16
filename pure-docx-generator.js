@@ -448,6 +448,80 @@ class PureDocxProposalGenerator {
           ],
         })
       );
+      
+      // Add pricing tiers if available
+      if (serviceInfo && serviceInfo.pricingTiers && serviceInfo.pricingTiers.length > 0) {
+        // Add title row
+        rows.push(
+          new TableRow({
+            children: [
+              new TableCell({
+                width: { size: 8, type: WidthType.PERCENTAGE },
+                margins: { top: 50, bottom: 50, left: 100, right: 100 },
+                children: [new Paragraph({ text: '', spacing: { before: 0, after: 0 } })],
+              }),
+              new TableCell({
+                width: { size: 28, type: WidthType.PERCENTAGE },
+                margins: { top: 50, bottom: 50, left: 100, right: 100 },
+                children: [new Paragraph({ text: '', spacing: { before: 0, after: 0 } })],
+              }),
+              new TableCell({
+                width: { size: 54, type: WidthType.PERCENTAGE },
+                shading: { fill: 'F8F9FA' },
+                margins: { top: 50, bottom: 50, left: 100, right: 100 },
+                children: [
+                  new Paragraph({
+                    spacing: { before: 0, after: 0 },
+                    children: [new TextRun({ text: 'Preisstaffelung:', size: 18, bold: true })],
+                  }),
+                ],
+              }),
+              new TableCell({
+                width: { size: 10, type: WidthType.PERCENTAGE },
+                margins: { top: 50, bottom: 50, left: 100, right: 100 },
+                children: [new Paragraph({ text: '', spacing: { before: 0, after: 0 } })],
+              }),
+            ],
+          })
+        );
+        
+        // Add each pricing tier
+        serviceInfo.pricingTiers.forEach(tier => {
+          rows.push(
+            new TableRow({
+              children: [
+                new TableCell({
+                  width: { size: 8, type: WidthType.PERCENTAGE },
+                  margins: { top: 50, bottom: 50, left: 100, right: 100 },
+                  children: [new Paragraph({ text: '', spacing: { before: 0, after: 0 } })],
+                }),
+                new TableCell({
+                  width: { size: 28, type: WidthType.PERCENTAGE },
+                  margins: { top: 50, bottom: 50, left: 100, right: 100 },
+                  children: [new Paragraph({ text: '', spacing: { before: 0, after: 0 } })],
+                }),
+                new TableCell({
+                  width: { size: 54, type: WidthType.PERCENTAGE },
+                  shading: { fill: 'FAFBFC' },
+                  margins: { top: 50, bottom: 50, left: 100, right: 100 },
+                  children: [
+                    new Paragraph({
+                      indent: { left: 300 },
+                      spacing: { before: 0, after: 0 },
+                      children: [new TextRun({ text: tier.label, size: 17 })],
+                    }),
+                  ],
+                }),
+                new TableCell({
+                  width: { size: 10, type: WidthType.PERCENTAGE },
+                  margins: { top: 50, bottom: 50, left: 100, right: 100 },
+                  children: [new Paragraph({ text: '', spacing: { before: 0, after: 0 } })],
+                }),
+              ],
+            })
+          );
+        });
+      }
     });
 
     return rows;
@@ -462,10 +536,17 @@ class PureDocxProposalGenerator {
     return new TableCell({
       width: { size: width, type: WidthType.PERCENTAGE },
       rowSpan: rowSpan,
-      verticalAlign: VerticalAlign.TOP,
+      verticalAlign: VerticalAlign.CENTER,
+      margins: {
+        top: 50,
+        bottom: 50,
+        left: 100,
+        right: 100,
+      },
       children: [
         new Paragraph({
           alignment: centerAlign ? AlignmentType.CENTER : alignment,
+          spacing: { before: 0, after: 0 },
           children: [new TextRun({ text: text, bold: bold, size: 18 })],
         }),
       ],
@@ -1037,10 +1118,8 @@ class PureDocxProposalGenerator {
       rows.push(
         new TableRow({
           children: [
-            this.createTableCell('', { width: 8 }),
-            this.createTableCell('Zwischensumme (Netto)', { width: 28 }),
-            this.createTableCell('', { width: 54 }),
-            this.createTableCell(`${this.data.subtotalNet} €`, { width: 10, centerAlign: true }),
+            this.createTableCell('Zwischensumme (Netto)', { width: 70, bold: true }),
+            this.createTableCell(`${this.data.subtotalNet} €`, { width: 30, centerAlign: true, bold: true }),
           ],
         })
       );
@@ -1053,10 +1132,8 @@ class PureDocxProposalGenerator {
       rows.push(
         new TableRow({
           children: [
-            this.createTableCell('', { width: 8 }),
-            this.createTableCell(`${discountLabel}${discountTypeLabel}`, { width: 28 }),
-            this.createTableCell('', { width: 54 }),
-            this.createTableCell(`- ${this.data.discountAmount} €`, { width: 10, centerAlign: true }),
+            this.createTableCell(`${discountLabel}${discountTypeLabel}`, { width: 70 }),
+            this.createTableCell(`- ${this.data.discountAmount} €`, { width: 30, centerAlign: true }),
           ],
         })
       );
@@ -1066,10 +1143,8 @@ class PureDocxProposalGenerator {
     rows.push(
       new TableRow({
         children: [
-          this.createTableCell('', { width: 8 }),
-          this.createTableCell('Gesamtpreis Netto', { bold: true, width: 28 }),
-          this.createTableCell('', { width: 54 }),
-          this.createTableCell(`${this.data.totalNetPrice} €`, { width: 10, centerAlign: true }),
+          this.createTableCell('Gesamtpreis Netto', { bold: true, width: 70 }),
+          this.createTableCell(`${this.data.totalNetPrice} €`, { width: 30, centerAlign: true, bold: true }),
         ],
       })
     );
@@ -1078,10 +1153,8 @@ class PureDocxProposalGenerator {
     rows.push(
       new TableRow({
         children: [
-          this.createTableCell('', { width: 8 }),
-          this.createTableCell('MwSt. (19 %)', { width: 28 }),
-          this.createTableCell('', { width: 54 }),
-          this.createTableCell(`${this.data.totalVat} €`, { width: 10, centerAlign: true }),
+          this.createTableCell('MwSt. (19 %)', { width: 70 }),
+          this.createTableCell(`${this.data.totalVat} €`, { width: 30, centerAlign: true }),
         ],
       })
     );
@@ -1090,10 +1163,8 @@ class PureDocxProposalGenerator {
     rows.push(
       new TableRow({
         children: [
-          this.createTableCell('', { width: 8 }),
-          this.createTableCell('Gesamtpreis Brutto', { bold: true, width: 28 }),
-          this.createTableCell('', { width: 54 }),
-          this.createTableCell(`${this.data.totalGrossPrice} €`, { width: 10, centerAlign: true }),
+          this.createTableCell('Gesamtpreis Brutto', { bold: true, width: 70 }),
+          this.createTableCell(`${this.data.totalGrossPrice} €`, { width: 30, centerAlign: true, bold: true }),
         ],
       })
     );
@@ -1106,7 +1177,7 @@ class PureDocxProposalGenerator {
       new Table({
         width: { size: 100, type: WidthType.PERCENTAGE },
         margins: {
-          bottom: 600,
+          bottom: 1200,
         },
         rows: rows,
       }),
@@ -1368,8 +1439,8 @@ class PureDocxProposalGenerator {
         ],
       },
       
-      // SECTION 4: PAGE 6 (Second-to-last) - Perspective Images
-      {
+      // SECTION 4: PAGE 6 (Second-to-last) - Perspective Images (only if images exist)
+      ...(this.data.images && this.data.images.length > 0 ? [{
         properties: this.getStandardPageProperties(),
         footers: { default: this.createFooter() },
         children: [
@@ -1379,7 +1450,7 @@ class PureDocxProposalGenerator {
           // Perspective images with titles and descriptions
           ...this.createPerspectiveImagesSection(),
         ],
-      },
+      }] : []),
       
       // SECTION 5: LAST PAGE - Terms and Conditions
       {
