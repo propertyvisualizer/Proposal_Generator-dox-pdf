@@ -723,6 +723,11 @@
                             <span class="helper-text">Price varies by building type and number of views</span>
                         </div>
                         <div class="form-group">
+                            <label>Custom Unit Price (Optional)</label>
+                            <input type="number" class="custom-price-input" data-service="exterior-ground" min="0" step="0.01" placeholder="Leave empty for default price">
+                            <span class="helper-text">Override default price per unit (in €)</span>
+                        </div>
+                        <div class="form-group">
                             <label>Description Details (Optional)</label>
                             <div class="default-bullets">
                                 <div class="default-bullets-title">Default Description:</div>
@@ -733,11 +738,11 @@
                                     <li>Umgebungsgestaltung mit Vegetation und Kontext</li>
                                 </ul>
                             </div>
-                            <div class="bullets-container" id="bullets-exterior-ground">
-                                <ul class="bullet-list" data-service="exterior-ground"></ul>
+                            <div class="form-group">
+                                <label>Custom Description (Optional)</label>
+                                <textarea class="custom-description-textarea" data-service="exterior-ground" rows="6" placeholder="Enter custom bullet points (one per line)&#10;&#10;Example:&#10;Main bullet point&#10;- Sub-bullet point&#10;-- Sub-sub-bullet point"></textarea>
+                                <span class="helper-text">One bullet per line. Use - for sub-bullets, -- for sub-sub-bullets</span>
                             </div>
-                            <button type="button" class="add-bullet-btn" onclick="addBulletPoint('exterior-ground')">+ Add Custom Bullet Point</button>
-                            <span class="helper-text">Add custom description points - they will appear below defaults</span>
                         </div>
                         <div class="price-display">
                             <span>Price: <strong><span class="service-price" data-service="exterior-ground">0,00 €</span></strong></span>
@@ -758,8 +763,13 @@
                             <span class="helper-text">Price: 12,00 € per view (only with ground perspectives)</span>
                         </div>
                         <div class="form-group">
+                            <label>Custom Unit Price (Optional)</label>
+                            <input type="number" class="custom-price-input" data-service="exterior-bird" min="0" step="0.01" placeholder="Leave empty for default price">
+                            <span class="helper-text">Override default price per unit (in €)</span>
+                        </div>
+                        <div class="form-group">
                             <label>Description Details (Optional)</label>
-                            <textarea class="service-description" data-service="exterior-bird" placeholder="Add custom bullet points (one per line)" rows="3"></textarea>
+                            <textarea class="custom-description-textarea" data-service="exterior-bird" rows="6" placeholder="Enter custom bullet points (one per line)&#10;&#10;Example:&#10;Main bullet point&#10;- Sub-bullet point&#10;-- Sub-sub-bullet point"></textarea>
                             <span class="helper-text">Add custom description points or leave empty for default</span>
                         </div>
                         <div class="price-display">
@@ -802,8 +812,13 @@
                             <span class="helper-text">Price varies by project type</span>
                         </div>
                         <div class="form-group">
+                            <label>Custom Unit Price (Optional)</label>
+                            <input type="number" class="custom-price-input" data-service="3d-floorplan" min="0" step="0.01" placeholder="Leave empty for default price">
+                            <span class="helper-text">Override default price per unit (in €)</span>
+                        </div>
+                        <div class="form-group">
                             <label>Description Details (Optional)</label>
-                            <textarea class="service-description" data-service="3d-floorplan" placeholder="Add custom bullet points (one per line)" rows="3"></textarea>
+                            <textarea class="custom-description-textarea" data-service="3d-floorplan" rows="6" placeholder="Enter custom bullet points (one per line)&#10;&#10;Example:&#10;Main bullet point&#10;- Sub-bullet point&#10;-- Sub-sub-bullet point"></textarea>
                             <span class="helper-text">Add custom description points or leave empty for default</span>
                         </div>
                         <div class="price-display">
@@ -824,8 +839,13 @@
                             <span class="helper-text">Price: 199,00 € per floor</span>
                         </div>
                         <div class="form-group">
+                            <label>Custom Unit Price (Optional)</label>
+                            <input type="number" class="custom-price-input" data-service="3d-complete-floor" min="0" step="0.01" placeholder="Leave empty for default price">
+                            <span class="helper-text">Override default price per unit (in €)</span>
+                        </div>
+                        <div class="form-group">
                             <label>Description Details (Optional)</label>
-                            <textarea class="service-description" data-service="3d-complete-floor" placeholder="Add custom bullet points (one per line)&#10;e.g.:&#10;EG - Ground floor&#10;1. OG - First floor&#10;2. OG - Second floor" rows="4"></textarea>
+                            <textarea class="custom-description-textarea" data-service="3d-complete-floor" rows="6" placeholder="Enter custom bullet points (one per line)&#10;&#10;Example:&#10;EG - Ground floor&#10;1. OG - First floor&#10;- Sub-bullet point&#10;-- Sub-sub-bullet point"></textarea>
                             <span class="helper-text">Add custom description points or leave empty for default</span>
                         </div>
                         <div class="price-display">
@@ -868,8 +888,13 @@
                             <span class="helper-text">Price varies by project type</span>
                         </div>
                         <div class="form-group">
+                            <label>Custom Unit Price (Optional)</label>
+                            <input type="number" class="custom-price-input" data-service="2d-floorplan" min="0" step="0.01" placeholder="Leave empty for default price">
+                            <span class="helper-text">Override default price per unit (in €)</span>
+                        </div>
+                        <div class="form-group">
                             <label>Description Details (Optional)</label>
-                            <textarea class="service-description" data-service="2d-floorplan" placeholder="Add custom bullet points (one per line)" rows="3"></textarea>
+                            <textarea class="custom-description-textarea" data-service="2d-floorplan" rows="6" placeholder="Enter custom bullet points (one per line)&#10;&#10;Example:&#10;Main bullet point&#10;- Sub-bullet point&#10;-- Sub-sub-bullet point"></textarea>
                             <span class="helper-text">Add custom description points or leave empty for default</span>
                         </div>
                         <div class="price-display">
@@ -891,8 +916,13 @@
                             <span class="helper-text">Price: 99,00 € per photo</span>
                         </div>
                         <div class="form-group">
+                            <label>Custom Unit Price (Optional)</label>
+                            <input type="number" class="custom-price-input" data-service="home-staging" min="0" step="0.01" placeholder="Leave empty for default price">
+                            <span class="helper-text">Override default price per unit (in €)</span>
+                        </div>
+                        <div class="form-group">
                             <label>Description Details (Optional)</label>
-                            <textarea class="service-description" data-service="home-staging" placeholder="Add custom bullet points (one per line)&#10;e.g.:&#10;Wohnzimmer - Living room&#10;Küche - Kitchen&#10;Schlafzimmer - Bedroom" rows="4"></textarea>
+                            <textarea class="custom-description-textarea" data-service="home-staging" rows="6" placeholder="Enter custom bullet points (one per line)&#10;&#10;Example:&#10;Wohnzimmer - Living room&#10;Küche - Kitchen&#10;- Sub-bullet point"></textarea>
                             <span class="helper-text">Add custom description points or leave empty for default</span>
                         </div>
                         <div class="price-display">
@@ -914,8 +944,13 @@
                             <span class="helper-text">Price: 139,00 € per photo</span>
                         </div>
                         <div class="form-group">
+                            <label>Custom Unit Price (Optional)</label>
+                            <input type="number" class="custom-price-input" data-service="renovation" min="0" step="0.01" placeholder="Leave empty for default price">
+                            <span class="helper-text">Override default price per unit (in €)</span>
+                        </div>
+                        <div class="form-group">
                             <label>Description Details (Optional)</label>
-                            <textarea class="service-description" data-service="renovation" placeholder="Add custom bullet points (one per line)&#10;e.g.:&#10;Bad - Bathroom&#10;Küche - Kitchen" rows="3"></textarea>
+                            <textarea class="custom-description-textarea" data-service="renovation" rows="6" placeholder="Enter custom bullet points (one per line)&#10;&#10;Example:&#10;Bad - Bathroom&#10;Küche - Kitchen&#10;- Sub-bullet point"></textarea>
                             <span class="helper-text">Add custom description points or leave empty for default</span>
                         </div>
                         <div class="price-display">
@@ -953,8 +988,13 @@
                             <span class="helper-text">Price varies by apartment size</span>
                         </div>
                         <div class="form-group">
+                            <label>Custom Unit Price (Optional)</label>
+                            <input type="number" class="custom-price-input" data-service="360-interior" min="0" step="0.01" placeholder="Leave empty for default price">
+                            <span class="helper-text">Override default price per unit (in €)</span>
+                        </div>
+                        <div class="form-group">
                             <label>Description Details (Optional)</label>
-                            <textarea class="service-description" data-service="360-interior" placeholder="Add custom bullet points (one per line)&#10;e.g.:&#10;Apt. 1.02&#10;Penthouse" rows="3"></textarea>
+                            <textarea class="custom-description-textarea" data-service="360-interior" rows="6" placeholder="Enter custom bullet points (one per line)&#10;&#10;Example:&#10;Apt. 1.02&#10;Penthouse&#10;- Sub-bullet point"></textarea>
                             <span class="helper-text">Add custom description points or leave empty for default</span>
                         </div>
                         <div class="price-display">
@@ -987,8 +1027,13 @@
                             <span class="helper-text">Price varies by building type</span>
                         </div>
                         <div class="form-group">
+                            <label>Custom Unit Price (Optional)</label>
+                            <input type="number" class="custom-price-input" data-service="360-exterior" min="0" step="0.01" placeholder="Leave empty for default price">
+                            <span class="helper-text">Override default price per unit (in €)</span>
+                        </div>
+                        <div class="form-group">
                             <label>Description Details (Optional)</label>
-                            <textarea class="service-description" data-service="360-exterior" placeholder="Add custom bullet points (one per line)" rows="3"></textarea>
+                            <textarea class="custom-description-textarea" data-service="360-exterior" rows="6" placeholder="Enter custom bullet points (one per line)&#10;&#10;Example:&#10;Main bullet point&#10;- Sub-bullet point&#10;-- Sub-sub-bullet point"></textarea>
                             <span class="helper-text">Add custom description points or leave empty for default</span>
                         </div>
                         <div class="price-display">
@@ -1010,8 +1055,13 @@
                             <span class="helper-text">Price: 499,00 € per video</span>
                         </div>
                         <div class="form-group">
+                            <label>Custom Unit Price (Optional)</label>
+                            <input type="number" class="custom-price-input" data-service="slideshow" min="0" step="0.01" placeholder="Leave empty for default price">
+                            <span class="helper-text">Override default price per unit (in €)</span>
+                        </div>
+                        <div class="form-group">
                             <label>Description Details (Optional)</label>
-                            <textarea class="service-description" data-service="slideshow" placeholder="Add custom bullet points (one per line)" rows="3"></textarea>
+                            <textarea class="custom-description-textarea" data-service="slideshow" rows="6" placeholder="Enter custom bullet points (one per line)&#10;&#10;Example:&#10;Main bullet point&#10;- Sub-bullet point&#10;-- Sub-sub-bullet point"></textarea>
                             <span class="helper-text">Add custom description points or leave empty for default</span>
                         </div>
                         <div class="price-display">
@@ -1033,8 +1083,13 @@
                             <span class="helper-text">Price: 99,00 € per site plan</span>
                         </div>
                         <div class="form-group">
+                            <label>Custom Unit Price (Optional)</label>
+                            <input type="number" class="custom-price-input" data-service="site-plan" min="0" step="0.01" placeholder="Leave empty for default price">
+                            <span class="helper-text">Override default price per unit (in €)</span>
+                        </div>
+                        <div class="form-group">
                             <label>Description Details (Optional)</label>
-                            <textarea class="service-description" data-service="site-plan" placeholder="Add custom bullet points (one per line)" rows="3"></textarea>
+                            <textarea class="custom-description-textarea" data-service="site-plan" rows="6" placeholder="Enter custom bullet points (one per line)&#10;&#10;Example:&#10;Main bullet point&#10;- Sub-bullet point&#10;-- Sub-sub-bullet point"></textarea>
                             <span class="helper-text">Add custom description points or leave empty for default</span>
                         </div>
                         <div class="price-display">
@@ -1056,8 +1111,13 @@
                             <span class="helper-text">Price: 299,00 € per package</span>
                         </div>
                         <div class="form-group">
+                            <label>Custom Unit Price (Optional)</label>
+                            <input type="number" class="custom-price-input" data-service="social-media" min="0" step="0.01" placeholder="Leave empty for default price">
+                            <span class="helper-text">Override default price per unit (in €)</span>
+                        </div>
+                        <div class="form-group">
                             <label>Description Details (Optional)</label>
-                            <textarea class="service-description" data-service="social-media" placeholder="Add custom bullet points (one per line)" rows="3"></textarea>
+                            <textarea class="custom-description-textarea" data-service="social-media" rows="6" placeholder="Enter custom bullet points (one per line)&#10;&#10;Example:&#10;Main bullet point&#10;- Sub-bullet point&#10;-- Sub-sub-bullet point"></textarea>
                             <span class="helper-text">Add custom description points or leave empty for default</span>
                         </div>
                         <div class="price-display">
@@ -1079,8 +1139,13 @@
                             <span class="helper-text">Tiered pricing: 1=399€, 2=299€, 3=289€, 4=269€, 5=259€, 6=249€, 7=239€, 8=229€, 9=219€, 10+=199€</span>
                         </div>
                         <div class="form-group">
+                            <label>Custom Unit Price (Optional)</label>
+                            <input type="number" class="custom-price-input" data-service="interior" min="0" step="0.01" placeholder="Leave empty for default price">
+                            <span class="helper-text">Override default price per unit (in €)</span>
+                        </div>
+                        <div class="form-group">
                             <label>Description Details (Optional)</label>
-                            <textarea class="service-description" data-service="interior" placeholder="Add custom bullet points (one per line)&#10;e.g.:&#10;Wohnzimmer - Living room&#10;Küche - Kitchen&#10;Schlafzimmer - Bedroom&#10;Bad - Bathroom" rows="4"></textarea>
+                            <textarea class="custom-description-textarea" data-service="interior" rows="6" placeholder="Enter custom bullet points (one per line)&#10;&#10;Example:&#10;Wohnzimmer - Living room&#10;Küche - Kitchen&#10;- Sub-bullet point"></textarea>
                             <span class="helper-text">Add custom description points or leave empty for default</span>
                         </div>
                         <div class="price-display">
@@ -1102,8 +1167,13 @@
                             <span class="helper-text">Preis nach Anfrage</span>
                         </div>
                         <div class="form-group">
+                            <label>Custom Unit Price (Optional)</label>
+                            <input type="number" class="custom-price-input" data-service="terrace" min="0" step="0.01" placeholder="Leave empty for default price">
+                            <span class="helper-text">Override default price per unit (in €)</span>
+                        </div>
+                        <div class="form-group">
                             <label>Description Details (Optional)</label>
-                            <textarea class="service-description" data-service="terrace" placeholder="Add custom bullet points (one per line)&#10;e.g.:&#10;Terrasse Apt. 2.03&#10;Rooftop terrace" rows="3"></textarea>
+                            <textarea class="custom-description-textarea" data-service="terrace" rows="6" placeholder="Enter custom bullet points (one per line)&#10;&#10;Example:&#10;Terrasse Apt. 2.03&#10;Rooftop terrace&#10;- Sub-bullet point"></textarea>
                             <span class="helper-text">Add custom description points or leave empty for default</span>
                         </div>
                         <div class="price-display">
@@ -1250,28 +1320,85 @@
                                 quantityInput.value = savedService.quantity;
                             }
                             
-                            // Restore custom descriptions as bullet points
+                            // Restore custom price if present
+                            if (savedService.customPrice && quantityInput) {
+                                const serviceId = quantityInput.dataset.service;
+                                const customPriceInput = serviceItem.querySelector(`.custom-price-input[data-service="${serviceId}"]`);
+                                if (customPriceInput) {
+                                    customPriceInput.value = savedService.customPrice;
+                                }
+                            }
+                            
+                            // Restore building type if present
+                            if (savedService.buildingType && quantityInput) {
+                                const serviceId = quantityInput.dataset.service;
+                                const buildingTypeSelect = serviceItem.querySelector(`.building-type-input[data-service="${serviceId}"]`);
+                                if (buildingTypeSelect) {
+                                    buildingTypeSelect.value = savedService.buildingType;
+                                }
+                            }
+                            
+                            // Restore apartment size if present
+                            if (savedService.apartmentSize && quantityInput) {
+                                const serviceId = quantityInput.dataset.service;
+                                const apartmentSizeSelect = serviceItem.querySelector(`.apartment-size-input[data-service="${serviceId}"]`);
+                                if (apartmentSizeSelect) {
+                                    apartmentSizeSelect.value = savedService.apartmentSize;
+                                }
+                            }
+                            
+                            // Restore project type and area size if present
+                            if (savedService.projectType && quantityInput) {
+                                const serviceId = quantityInput.dataset.service;
+                                const projectTypeSelect = serviceItem.querySelector(`.project-type-input[data-service="${serviceId}"]`);
+                                if (projectTypeSelect) {
+                                    projectTypeSelect.value = savedService.projectType;
+                                    // Show/hide commercial fields
+                                    const commercialField = serviceItem.querySelector(`.commercial-only[data-service="${serviceId}"]`);
+                                    if (commercialField) {
+                                        commercialField.style.display = savedService.projectType === 'commercial' ? 'block' : 'none';
+                                    }
+                                }
+                            }
+                            
+                            if (savedService.areaSize && quantityInput) {
+                                const serviceId = quantityInput.dataset.service;
+                                const areaSizeSelect = serviceItem.querySelector(`.area-size-input[data-service="${serviceId}"]`);
+                                if (areaSizeSelect) {
+                                    areaSizeSelect.value = savedService.areaSize;
+                                }
+                            }
+                            
+                            // Restore custom descriptions to textarea
                             if (savedService.customDescription && quantityInput) {
                                 const serviceId = quantityInput.dataset.service;
-                                serviceBullets[serviceId] = savedService.customDescription.map((desc, index) => {
-                                    if (typeof desc === 'object' && desc.text) {
-                                        return {
-                                            id: Date.now() + index + Math.random(),
-                                            text: desc.text,
-                                            children: (desc.children || []).map((sub, subIndex) => ({
-                                                id: Date.now() + index + subIndex + Math.random() + 0.1,
-                                                text: sub
-                                            }))
-                                        };
-                                    } else {
-                                        return {
-                                            id: Date.now() + index + Math.random(),
-                                            text: desc,
-                                            children: []
-                                        };
-                                    }
-                                });
-                                renderBullets(serviceId);
+                                const textarea = document.querySelector(`.custom-description-textarea[data-service="${serviceId}"]`);
+                                if (textarea) {
+                                    // Convert array back to textarea format with dash hierarchy
+                                    const lines = [];
+                                    savedService.customDescription.forEach(item => {
+                                        if (typeof item === 'object' && item.text) {
+                                            lines.push(item.text);
+                                            if (item.children && item.children.length > 0) {
+                                                item.children.forEach(child => {
+                                                    if (typeof child === 'object' && child.text) {
+                                                        lines.push('- ' + child.text);
+                                                        if (child.children && child.children.length > 0) {
+                                                            child.children.forEach(subchild => {
+                                                                lines.push('-- ' + (typeof subchild === 'object' ? subchild.text : subchild));
+                                                            });
+                                                        }
+                                                    } else {
+                                                        lines.push('- ' + child);
+                                                    }
+                                                });
+                                            }
+                                        } else {
+                                            lines.push(item);
+                                        }
+                                    });
+                                    textarea.value = lines.join('\n');
+                                }
                             }
                         }
                     });
@@ -1301,11 +1428,30 @@
             try {
                 showSaveIndicator();
                 const data = collectFormData();
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+                
+                // Create a copy without image data to avoid localStorage quota
+                const dataToSave = {
+                    ...data,
+                    images: data.images.map(img => ({
+                        title: img.title,
+                        description: img.description,
+                        fileName: img.fileName,
+                        fileSize: img.fileSize,
+                        fileType: img.fileType
+                        // Exclude imageData from localStorage
+                    }))
+                };
+                
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(dataToSave));
                 console.log('💾 Form data auto-saved');
                 showSavedIndicator();
             } catch (error) {
                 console.error('Error saving form data:', error);
+                // If still quota exceeded, try clearing old data
+                if (error.name === 'QuotaExceededError') {
+                    console.warn('⚠️ Storage quota exceeded. Skipping auto-save.');
+                    showSavedIndicator(); // Still show saved to avoid confusion
+                }
             }
         }
 
@@ -1467,6 +1613,14 @@
             });
         });
 
+        // Update calculations on custom price change
+        document.querySelectorAll('.custom-price-input').forEach(input => {
+            input.addEventListener('input', function() {
+                updateCalculations();
+                saveFormData();
+            });
+        });
+
         // Add auto-save to all input fields
         document.querySelectorAll('input, select, textarea').forEach(field => {
             field.addEventListener('change', saveFormData);
@@ -1480,33 +1634,43 @@
                 const quantity = parseInt(input.value) || 0;
                 const priceFunc = pricing[service];
                 
+                // Check if custom price is provided
+                const customPriceInput = document.querySelector(`.custom-price-input[data-service="${service}"]`);
+                const customPrice = customPriceInput ? parseFloat(customPriceInput.value) : null;
+                
                 if (priceFunc) {
                     let unitPrice, serviceTotal;
                     
-                    // Get additional parameters based on service type
-                    if (service === 'exterior-ground') {
-                        const buildingType = document.querySelector(`.building-type-input[data-service="${service}"]`)?.value;
-                        unitPrice = priceFunc(quantity, buildingType);
-                        serviceTotal = unitPrice * quantity;
-                    } else if (service === '360-interior') {
-                        const apartmentSize = document.querySelector(`.apartment-size-input[data-service="${service}"]`)?.value;
-                        unitPrice = priceFunc(apartmentSize);
-                        serviceTotal = unitPrice * quantity;
-                    } else if (service === '360-exterior') {
-                        const buildingType = document.querySelector(`.building-type-input[data-service="${service}"]`)?.value;
-                        unitPrice = priceFunc(buildingType);
-                        serviceTotal = unitPrice * quantity;
-                    } else if (service === '3d-floorplan' || service === '2d-floorplan') {
-                        const projectType = document.querySelector(`.project-type-input[data-service="${service}"]`)?.value;
-                        const areaSize = document.querySelector(`.area-size-input[data-service="${service}"]`)?.value;
-                        unitPrice = priceFunc(projectType, areaSize);
-                        serviceTotal = unitPrice * quantity;
-                    } else if (service === 'interior') {
-                        unitPrice = priceFunc(quantity);
+                    // Use custom price if provided, otherwise calculate from pricing function
+                    if (customPrice && customPrice > 0) {
+                        unitPrice = customPrice;
                         serviceTotal = unitPrice * quantity;
                     } else {
-                        unitPrice = priceFunc();
-                        serviceTotal = unitPrice * quantity;
+                        // Get additional parameters based on service type
+                        if (service === 'exterior-ground') {
+                            const buildingType = document.querySelector(`.building-type-input[data-service="${service}"]`)?.value;
+                            unitPrice = priceFunc(quantity, buildingType);
+                            serviceTotal = unitPrice * quantity;
+                        } else if (service === '360-interior') {
+                            const apartmentSize = document.querySelector(`.apartment-size-input[data-service="${service}"]`)?.value;
+                            unitPrice = priceFunc(apartmentSize);
+                            serviceTotal = unitPrice * quantity;
+                        } else if (service === '360-exterior') {
+                            const buildingType = document.querySelector(`.building-type-input[data-service="${service}"]`)?.value;
+                            unitPrice = priceFunc(buildingType);
+                            serviceTotal = unitPrice * quantity;
+                        } else if (service === '3d-floorplan' || service === '2d-floorplan') {
+                            const projectType = document.querySelector(`.project-type-input[data-service="${service}"]`)?.value;
+                            const areaSize = document.querySelector(`.area-size-input[data-service="${service}"]`)?.value;
+                            unitPrice = priceFunc(projectType, areaSize);
+                            serviceTotal = unitPrice * quantity;
+                        } else if (service === 'interior') {
+                            unitPrice = priceFunc(quantity);
+                            serviceTotal = unitPrice * quantity;
+                        } else {
+                            unitPrice = priceFunc();
+                            serviceTotal = unitPrice * quantity;
+                        }
                     }
                     
                     // Update service price display
@@ -1640,12 +1804,17 @@
                 // Preview image
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    preview.src = e.target.result;
-                    preview.classList.add('show');
-                    uploadArea.classList.add('has-image');
-                    
-                    const uploadText = uploadArea.querySelector('.image-upload-text');
-                    uploadText.textContent = `✅ ${file.name}`;
+                    if (preview) {
+                        preview.src = e.target.result;
+                        preview.classList.add('show');
+                    }
+                    if (uploadArea) {
+                        uploadArea.classList.add('has-image');
+                        const uploadText = uploadArea.querySelector('.image-upload-text');
+                        if (uploadText) {
+                            uploadText.textContent = `✅ ${file.name}`;
+                        }
+                    }
                 };
                 reader.readAsDataURL(file);
             }
@@ -1937,32 +2106,80 @@
 
         // Convert bullets to the format expected by collectFormData
         function bulletsToDescriptionArray(serviceId) {
-            if (!serviceBullets[serviceId] || serviceBullets[serviceId].length === 0) {
+            // Get textarea content for this service
+            const textarea = document.querySelector(`.custom-description-textarea[data-service="${serviceId}"]`);
+            if (!textarea || !textarea.value.trim()) {
                 return null;
             }
 
-            return serviceBullets[serviceId]
-                .filter(bullet => bullet.text.trim())
-                .map(bullet => {
-                    if (bullet.children && bullet.children.length > 0) {
-                        const validChildren = bullet.children
-                            .filter(sub => sub.text.trim())
-                            .map(sub => sub.text.trim());
-                        
-                        if (validChildren.length > 0) {
-                            return {
-                                text: bullet.text.trim(),
-                                children: validChildren
+            const lines = textarea.value.split('\n').filter(line => line.trim());
+            if (lines.length === 0) return null;
+
+            const result = [];
+            let currentMainBullet = null;
+            let currentSubBullets = [];
+
+            lines.forEach(line => {
+                const trimmedLine = line.trim();
+                
+                if (trimmedLine.startsWith('--')) {
+                    // Sub-sub-bullet (add to current sub-bullet's children if exists)
+                    const text = trimmedLine.substring(2).trim();
+                    if (text && currentSubBullets.length > 0) {
+                        // Get the last sub-bullet and add this as its child
+                        const lastSubIndex = currentSubBullets.length - 1;
+                        if (typeof currentSubBullets[lastSubIndex] === 'string') {
+                            // Convert last sub-bullet to object with children
+                            currentSubBullets[lastSubIndex] = {
+                                text: currentSubBullets[lastSubIndex],
+                                children: [text]
                             };
+                        } else if (currentSubBullets[lastSubIndex].children) {
+                            currentSubBullets[lastSubIndex].children.push(text);
                         }
                     }
-                    return bullet.text.trim();
-                });
+                } else if (trimmedLine.startsWith('-')) {
+                    // Sub-bullet
+                    const text = trimmedLine.substring(1).trim();
+                    if (text) {
+                        currentSubBullets.push(text);
+                    }
+                } else {
+                    // Main bullet - save previous main bullet if exists
+                    if (currentMainBullet !== null) {
+                        if (currentSubBullets.length > 0) {
+                            result.push({
+                                text: currentMainBullet,
+                                children: currentSubBullets
+                            });
+                        } else {
+                            result.push(currentMainBullet);
+                        }
+                    }
+                    // Start new main bullet
+                    currentMainBullet = trimmedLine;
+                    currentSubBullets = [];
+                }
+            });
+
+            // Don't forget the last bullet
+            if (currentMainBullet !== null) {
+                if (currentSubBullets.length > 0) {
+                    result.push({
+                        text: currentMainBullet,
+                        children: currentSubBullets
+                    });
+                } else {
+                    result.push(currentMainBullet);
+                }
+            }
+
+            return result.length > 0 ? result : null;
         }
 
         // ========== END BULLET POINT MANAGEMENT ==========
 
-        function collectImageData() {
+        function collectImageData(includeImageData = true) {
             const images = [];
             const imageItems = document.querySelectorAll('.image-item');
             
@@ -1975,15 +2192,20 @@
                 
                 // Include images even if title/description are optional
                 if (fileInput && fileInput.files[0]) {
-                    images.push({
+                    const imageObj = {
                         title: titleInput ? titleInput.value.trim() : '',
                         description: descriptionInput ? descriptionInput.value.trim() : '',
                         fileName: fileInput.files[0].name,
                         fileSize: fileInput.files[0].size,
-                        fileType: fileInput.files[0].type,
-                        // Store image data URL for preview
-                        imageData: preview && preview.src ? preview.src : null
-                    });
+                        fileType: fileInput.files[0].type
+                    };
+                    
+                    // Only include base64 data when sending to server (not for localStorage)
+                    if (includeImageData && preview && preview.src) {
+                        imageObj.imageData = preview.src;
+                    }
+                    
+                    images.push(imageObj);
                 }
             });
             
@@ -2027,30 +2249,40 @@
                     const priceFunc = pricing[service];
                     let unitPrice, serviceTotal;
                     
-                    // Get additional parameters based on service type
-                    if (service === 'exterior-ground') {
-                        const buildingType = item.querySelector('.building-type-input')?.value;
-                        unitPrice = priceFunc(quantity, buildingType);
-                        serviceTotal = unitPrice * quantity;
-                    } else if (service === '360-interior') {
-                        const apartmentSize = item.querySelector('.apartment-size-input')?.value;
-                        unitPrice = priceFunc(apartmentSize);
-                        serviceTotal = unitPrice * quantity;
-                    } else if (service === '360-exterior') {
-                        const buildingType = item.querySelector('.building-type-input')?.value;
-                        unitPrice = priceFunc(buildingType);
-                        serviceTotal = unitPrice * quantity;
-                    } else if (service === '3d-floorplan' || service === '2d-floorplan') {
-                        const projectType = item.querySelector('.project-type-input')?.value;
-                        const areaSize = item.querySelector('.area-size-input')?.value;
-                        unitPrice = priceFunc(projectType, areaSize);
-                        serviceTotal = unitPrice * quantity;
-                    } else if (service === 'interior') {
-                        unitPrice = priceFunc(quantity);
+                    // Check if custom price is provided
+                    const customPriceInput = item.querySelector('.custom-price-input');
+                    const customPrice = customPriceInput ? parseFloat(customPriceInput.value) : null;
+                    
+                    // Use custom price if provided, otherwise calculate from pricing function
+                    if (customPrice && customPrice > 0) {
+                        unitPrice = customPrice;
                         serviceTotal = unitPrice * quantity;
                     } else {
-                        unitPrice = priceFunc();
-                        serviceTotal = unitPrice * quantity;
+                        // Get additional parameters based on service type
+                        if (service === 'exterior-ground') {
+                            const buildingType = item.querySelector('.building-type-input')?.value;
+                            unitPrice = priceFunc(quantity, buildingType);
+                            serviceTotal = unitPrice * quantity;
+                        } else if (service === '360-interior') {
+                            const apartmentSize = item.querySelector('.apartment-size-input')?.value;
+                            unitPrice = priceFunc(apartmentSize);
+                            serviceTotal = unitPrice * quantity;
+                        } else if (service === '360-exterior') {
+                            const buildingType = item.querySelector('.building-type-input')?.value;
+                            unitPrice = priceFunc(buildingType);
+                            serviceTotal = unitPrice * quantity;
+                        } else if (service === '3d-floorplan' || service === '2d-floorplan') {
+                            const projectType = item.querySelector('.project-type-input')?.value;
+                            const areaSize = item.querySelector('.area-size-input')?.value;
+                            unitPrice = priceFunc(projectType, areaSize);
+                            serviceTotal = unitPrice * quantity;
+                        } else if (service === 'interior') {
+                            unitPrice = priceFunc(quantity);
+                            serviceTotal = unitPrice * quantity;
+                        } else {
+                            unitPrice = priceFunc();
+                            serviceTotal = unitPrice * quantity;
+                        }
                     }
                     
                     totalNet += serviceTotal;
@@ -2061,6 +2293,11 @@
                         unitPrice: formatPriceForJSON(unitPrice),
                         totalPrice: formatPriceForJSON(serviceTotal)
                     };
+                    
+                    // Add custom price if provided
+                    if (customPrice && customPrice > 0) {
+                        serviceData.customPrice = customPrice;
+                    }
                     
                     // Add additional parameters to serviceData
                     if (service === 'exterior-ground' || service === '360-exterior') {
@@ -2128,7 +2365,7 @@
                     DD: String(today.getDate()).padStart(2, '0')
                 },
                 services: services,
-                images: collectImageData(),
+                images: collectImageData(true), // Include image data by default
                 pricing: {
                     subtotalNet: formatPriceForJSON(totalNet),
                     totalNetPrice: formatPriceForJSON(finalTotalNet),
@@ -2213,8 +2450,24 @@
 
                 // Store data in localStorage for preview
                 console.log('Storing data in localStorage...');
-                localStorage.setItem('proposalPreviewData', JSON.stringify(data));
-                console.log('Data stored successfully');
+                try {
+                    localStorage.setItem('proposalPreviewData', JSON.stringify(data));
+                    console.log('Data stored successfully');
+                } catch (storageError) {
+                    if (storageError.name === 'QuotaExceededError') {
+                        console.warn('⚠️ Storage quota exceeded. Preview will work but data may not persist.');
+                        // Try storing without some non-critical data or use sessionStorage as fallback
+                        try {
+                            sessionStorage.setItem('proposalPreviewData', JSON.stringify(data));
+                            console.log('Data stored in sessionStorage as fallback');
+                        } catch (sessionError) {
+                            console.error('Failed to store in sessionStorage:', sessionError);
+                            alert('Warning: Unable to store all data due to size. Preview may be incomplete.');
+                        }
+                    } else {
+                        throw storageError;
+                    }
+                }
 
                 // Open preview page
                 console.log('Opening preview page...');
@@ -2559,7 +2812,7 @@
         window.addEventListener('DOMContentLoaded', async function() {
             initializeProjectTypes(); // Initialize project types dropdown
             await initializeSupabase(); // Initialize Supabase connection
-            initializeBulletUI(); // Initialize bullet UI for all services
+            // initializeBulletUI(); // DISABLED - Now using textarea format for bullets
             loadSavedData(); // Load saved data
             startAutoSave(); // Start auto-save
             updateCalculations();

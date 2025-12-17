@@ -1047,7 +1047,16 @@
 
     // Load proposal data from localStorage
     function loadProposalData() {
-      const data = JSON.parse(localStorage.getItem('proposalPreviewData') || '{}');
+      // Try localStorage first, then sessionStorage as fallback
+      let dataStr = localStorage.getItem('proposalPreviewData');
+      if (!dataStr) {
+        dataStr = sessionStorage.getItem('proposalPreviewData');
+        if (dataStr) {
+          console.log('📦 Loaded preview data from sessionStorage (fallback)');
+        }
+      }
+      
+      const data = JSON.parse(dataStr || '{}');
       
       if (!data.clientInfo) {
         alert('No proposal data found. Please fill out the form first.');
