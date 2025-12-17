@@ -1824,15 +1824,46 @@
               }
             }
           }
+          
+          // Recalculate subtotal and totals when quantity changes
+          recalculateServicesSubtotal();
         } else if (field === 'unitPrice') {
           const price = parseFloat(newValue) || 0;
           service.unitPrice = price;
           service.customPriceSet = true; // Mark that user manually set the price
+          
+          // Recalculate subtotal and totals when price changes
+          recalculateServicesSubtotal();
         }
         
         // Update localStorage
         localStorage.setItem('proposalData', JSON.stringify(window.proposalData));
         console.log(`Updated ${field} for service ${serviceIndex}:`, newValue);
+      }
+    }
+    
+    // Recalculate subtotal from all services
+    function recalculateServicesSubtotal() {
+      if (!window.proposalData || !window.proposalData.services) return;
+      
+      let subtotal = 0;
+      window.proposalData.services.forEach(service => {
+        const quantity = parseInt(service.quantity) || 0;
+        const price = parseFloat(service.unitPrice) || 0;
+        subtotal += quantity * price;
+      });
+      
+      // Update subtotal display
+      const subtotalElement = document.getElementById('preview-subtotalNet');
+      if (subtotalElement) {
+        subtotalElement.textContent = subtotal.toFixed(2).replace('.', ',') + ' €';
+        
+        // Update proposalData
+        window.proposalData.pricing.subtotalNet = subtotal.toFixed(2).replace('.', ',');
+        window.proposalData.pricing.totalNetPrice = subtotal.toFixed(2).replace('.', ',');
+        
+        // Recalculate totals with discount
+        recalculateTotals();
       }
     }
 

@@ -67,16 +67,16 @@ const serviceDescriptions = {
       'Referenzen: KLICK'
     ],
     pricingTiers: [
-      { quantity: 1, price: 399.00, label: '1 Ansicht Netto: 399,00 €' },
-      { quantity: 2, price: 299.00, label: '2 Ansichten: Netto pro Ansicht: 299,00 €' },
-      { quantity: 3, price: 289.00, label: '3 Ansichten: Netto pro Ansicht: 289,00 €' },
-      { quantity: 4, price: 269.00, label: '4 Ansichten: Netto pro Ansicht: 269,00 €' },
-      { quantity: 5, price: 259.00, label: '5 Ansichten: Netto pro Ansicht: 259,00 €' },
-      { quantity: 6, price: 249.00, label: '6 Ansichten: Netto pro Ansicht: 249,00 €' },
-      { quantity: 7, price: 239.00, label: '7 Ansichten: Netto pro Ansicht: 239,00 €' },
-      { quantity: 8, price: 229.00, label: '8 Ansichten: Netto pro Ansicht: 229,00 €' },
-      { quantity: 9, price: 219.00, label: '9 Ansichten: Netto pro Ansicht: 219,00 €' },
-      { quantity: 10, price: 199.00, label: '>=10 Ansichten: Netto pro Ansicht: 199,00 €' }
+      { quantity: 1, price: 399, label: '1 Ansicht Netto: 399,00 €' },
+      { quantity: 2, price: 299, label: '2 Ansichten: Netto pro Ansicht: 299,00 €' },
+      { quantity: 3, price: 289, label: '3 Ansichten: Netto pro Ansicht: 289,00 €' },
+      { quantity: 4, price: 269, label: '4 Ansichten: Netto pro Ansicht: 269,00 €' },
+      { quantity: 5, price: 259, label: '5 Ansichten: Netto pro Ansicht: 259,00 €' },
+      { quantity: 6, price: 249, label: '6 Ansichten: Netto pro Ansicht: 249,00 €' },
+      { quantity: 7, price: 239, label: '7 Ansichten: Netto pro Ansicht: 239,00 €' },
+      { quantity: 8, price: 229, label: '8 Ansichten: Netto pro Ansicht: 229,00 €' },
+      { quantity: 9, price: 219, label: '9 Ansichten: Netto pro Ansicht: 219,00 €' },
+      { quantity: 10, price: 199, label: '≥10 Ansichten: Netto pro Ansicht: 199,00 €' }
     ]
   },
   'terrace': {

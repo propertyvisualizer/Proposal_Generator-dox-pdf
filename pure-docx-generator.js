@@ -121,9 +121,9 @@ class PureDocxProposalGenerator {
         margin: {
           top: 1440,       // 1" = 1440 twips
           right: 1440,
-          bottom: 2400,    // 1.67" = 2400 twips (increased for footer space)
+          bottom: 1800,    // 1.25" = 1800 twips (footer space)
           left: 1440,
-          footer: 1100,    // Footer 0.76" from bottom (increased)
+          footer: 900,     // Footer 0.625" from bottom
         },
       },
     };
@@ -1207,7 +1207,7 @@ class PureDocxProposalGenerator {
         width: { size: 100, type: WidthType.PERCENTAGE },
         rows: rows,
       }),
-      new Paragraph({ spacing: { after: 3000 }, children: [] }),
+      new Paragraph({ spacing: { after: 1200 }, children: [] }),
     ];
   }
 
@@ -1247,10 +1247,20 @@ class PureDocxProposalGenerator {
           );
         }
 
-        // The actual image
-        if (imageData.imagePath && fs.existsSync(imageData.imagePath)) {
-          try {
-            const imageBuffer = fs.readFileSync(imageData.imagePath);
+        // The actual image - handle both base64 and file path
+        try {
+          let imageBuffer;
+          
+          if (imageData.imageData) {
+            // Handle base64 data
+            const base64Data = imageData.imageData.replace(/^data:image\/\w+;base64,/, '');
+            imageBuffer = Buffer.from(base64Data, 'base64');
+          } else if (imageData.imagePath && fs.existsSync(imageData.imagePath)) {
+            // Handle file path
+            imageBuffer = fs.readFileSync(imageData.imagePath);
+          }
+          
+          if (imageBuffer) {
             content.push(
               new Paragraph({
                 spacing: { after: 300 },
@@ -1266,24 +1276,24 @@ class PureDocxProposalGenerator {
                 ],
               })
             );
-          } catch (error) {
-            console.warn(`⚠️  Could not load image: ${imageData.imagePath}`, error.message);
-            // Add placeholder text if image fails to load
+          } else {
+            // No valid image source
             content.push(
               new Paragraph({
                 spacing: { after: 300 },
                 alignment: AlignmentType.CENTER,
-                children: [new TextRun({ text: `[Bild konnte nicht geladen werden: ${path.basename(imageData.imagePath)}]`, size: 18, italics: true, color: '999999' })],
+                children: [new TextRun({ text: '[Bild nicht verfügbar]', size: 18, italics: true, color: '999999' })],
               })
             );
           }
-        } else if (imageData.imagePath) {
-          // Image path provided but file doesn't exist
+        } catch (error) {
+          console.warn(`⚠️  Could not load image:`, error.message);
+          // Add placeholder text if image fails to load
           content.push(
             new Paragraph({
               spacing: { after: 300 },
               alignment: AlignmentType.CENTER,
-              children: [new TextRun({ text: `[Bild nicht gefunden: ${path.basename(imageData.imagePath)}]`, size: 18, italics: true, color: '999999' })],
+              children: [new TextRun({ text: '[Bild konnte nicht geladen werden]', size: 18, italics: true, color: '999999' })],
             })
           );
         }
@@ -1452,7 +1462,7 @@ class PureDocxProposalGenerator {
           this.createUnifiedServiceTable(),
           
           // Add spacing after table to prevent footer overlap
-          new Paragraph({ spacing: { after: 1800 }, children: [] }),
+          new Paragraph({ spacing: { after: 800 }, children: [] }),
         ],
       },
       

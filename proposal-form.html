@@ -617,12 +617,15 @@
                 <div class="form-grid">
                     <div class="form-group">
                         <label for="clientNumber">Client Number</label>
-                        <input type="text" id="clientNumber" placeholder="e.g. 12345">
-                        <span class="helper-text">Enter 5-digit client number to auto-fill company name</span>
+                        <div style="display: flex; gap: 8px; align-items: center;">
+                            <input type="text" id="clientNumber" placeholder="e.g. 12345" style="flex: 1;">
+                            <button type="button" id="fetchClientBtn" style="padding: 10px 16px; background: #1a2a4a; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 16px; min-width: 40px; transition: background 0.2s;" title="Fetch company name">✓</button>
+                        </div>
+                        <span class="helper-text">Enter 5-digit client number and click ✓ to fetch company name</span>
                     </div>
                     <div class="form-group" id="companyNameGroup">
                         <label for="companyName">Company Name *</label>
-                        <input type="text" id="companyName" required placeholder="e.g. Sample Company GmbH">
+                        <input type="text" id="companyName" required placeholder="Auto-filled from database" readonly style="background: #f5f7fa; cursor: not-allowed;">
                     </div>
                     <div class="form-group">
                         <label for="street">Address *</label>
@@ -704,9 +707,20 @@
                     </div>
                     <div class="service-details">
                         <div class="form-group">
+                            <label>Building Type *</label>
+                            <select class="building-type-input" data-service="exterior-ground" required>
+                                <option value="">Select Building Type...</option>
+                                <option value="EFH">EFH (Einfamilienhaus)</option>
+                                <option value="DHH">DHH & MFH (2-5 WE)</option>
+                                <option value="MFH-6-10">MFH (6-10 WE)</option>
+                                <option value="MFH-11-15">MFH (11-15 WE)</option>
+                            </select>
+                            <span class="helper-text">Select building type for pricing</span>
+                        </div>
+                        <div class="form-group">
                             <label>Number of Views *</label>
                             <input type="number" class="quantity-input" data-service="exterior-ground" min="0" value="0">
-                            <span class="helper-text">Tiered pricing: 1=20€, 2=18€, 3=16€, 4=14€, 5+=12€ per view</span>
+                            <span class="helper-text">Price varies by building type and number of views</span>
                         </div>
                         <div class="form-group">
                             <label>Description Details (Optional)</label>
@@ -762,9 +776,30 @@
                     </div>
                     <div class="service-details">
                         <div class="form-group">
+                            <label>Project Type *</label>
+                            <select class="project-type-input" data-service="3d-floorplan" required>
+                                <option value="">Select Project Type...</option>
+                                <option value="residential">Residential (69€ per plan)</option>
+                                <option value="commercial">Commercial (Price by area size)</option>
+                            </select>
+                            <span class="helper-text">Select residential or commercial project</span>
+                        </div>
+                        <div class="form-group commercial-only" style="display: none;" data-service="3d-floorplan">
+                            <label>Area Size (Fläche) *</label>
+                            <select class="area-size-input" data-service="3d-floorplan">
+                                <option value="">Select Area Size...</option>
+                                <option value="100">100 sqm - 99€</option>
+                                <option value="250">250 sqm - 199€</option>
+                                <option value="500">500 sqm - 299€</option>
+                                <option value="1000">1000 sqm - 399€</option>
+                                <option value="1500">1500 sqm - 499€</option>
+                            </select>
+                            <span class="helper-text">Select area size for commercial pricing</span>
+                        </div>
+                        <div class="form-group">
                             <label>Number of Floor Plans *</label>
                             <input type="number" class="quantity-input" data-service="3d-floorplan" min="0" value="0">
-                            <span class="helper-text">Price: 69,00 € per floor plan</span>
+                            <span class="helper-text">Price varies by project type</span>
                         </div>
                         <div class="form-group">
                             <label>Description Details (Optional)</label>
@@ -807,9 +842,30 @@
                     </div>
                     <div class="service-details">
                         <div class="form-group">
+                            <label>Project Type *</label>
+                            <select class="project-type-input" data-service="2d-floorplan" required>
+                                <option value="">Select Project Type...</option>
+                                <option value="residential">Residential (49€ per plan)</option>
+                                <option value="commercial">Commercial (Price by area size)</option>
+                            </select>
+                            <span class="helper-text">Select residential or commercial project</span>
+                        </div>
+                        <div class="form-group commercial-only" style="display: none;" data-service="2d-floorplan">
+                            <label>Area Size (Fläche) *</label>
+                            <select class="area-size-input" data-service="2d-floorplan">
+                                <option value="">Select Area Size...</option>
+                                <option value="100">100 sqm - 39€</option>
+                                <option value="250">250 sqm - 79€</option>
+                                <option value="500">500 sqm - 119€</option>
+                                <option value="1000">1000 sqm - 159€</option>
+                                <option value="1500">1500 sqm - 199€</option>
+                            </select>
+                            <span class="helper-text">Select area size for commercial pricing</span>
+                        </div>
+                        <div class="form-group">
                             <label>Number of Floor Plans *</label>
                             <input type="number" class="quantity-input" data-service="2d-floorplan" min="0" value="0">
-                            <span class="helper-text">Price: 49,00 € per floor plan</span>
+                            <span class="helper-text">Price varies by project type</span>
                         </div>
                         <div class="form-group">
                             <label>Description Details (Optional)</label>
@@ -872,13 +928,29 @@
                 <div class="service-item" id="service-360-interior">
                     <div class="service-header">
                         <input type="checkbox" id="check-360-interior">
-                        <label for="check-360-interior">360° Tour Innen</label>
+                        <label for="check-360-interior">360° Tour Innen (Virtuelle Tour)</label>
                     </div>
                     <div class="service-details">
                         <div class="form-group">
+                            <label>Apartment Size *</label>
+                            <select class="apartment-size-input" data-service="360-interior" required>
+                                <option value="">Select Apartment Size...</option>
+                                <option value="30">bis 30 m²</option>
+                                <option value="40">Etwa 40 m²</option>
+                                <option value="50">Etwa 50 m²</option>
+                                <option value="60">Etwa 60 m²</option>
+                                <option value="70">Etwa 70 m²</option>
+                                <option value="80">Etwa 80 m²</option>
+                                <option value="90">90 m² bis 100 m²</option>
+                                <option value="100">100 m² bis 120 m²</option>
+                                <option value="EFH">EFH und DHH</option>
+                            </select>
+                            <span class="helper-text">Select apartment size for pricing</span>
+                        </div>
+                        <div class="form-group">
                             <label>Number of Tours *</label>
                             <input type="number" class="quantity-input" data-service="360-interior" min="0" value="0">
-                            <span class="helper-text">Price: 599,00 € per tour</span>
+                            <span class="helper-text">Price varies by apartment size</span>
                         </div>
                         <div class="form-group">
                             <label>Description Details (Optional)</label>
@@ -895,13 +967,24 @@
                 <div class="service-item" id="service-360-exterior">
                     <div class="service-header">
                         <input type="checkbox" id="check-360-exterior">
-                        <label for="check-360-exterior">360° Video Außen</label>
+                        <label for="check-360-exterior">Video Außen</label>
                     </div>
                     <div class="service-details">
                         <div class="form-group">
+                            <label>Building Type *</label>
+                            <select class="building-type-input" data-service="360-exterior" required>
+                                <option value="">Select Building Type...</option>
+                                <option value="EFH-DHH">EFH & DHH</option>
+                                <option value="MFH-3-5">MFH (3-5 WE)</option>
+                                <option value="MFH-6-10">MFH (6-10 WE)</option>
+                                <option value="MFH-11-15">MFH (11-15 WE)</option>
+                            </select>
+                            <span class="helper-text">Select building type for pricing</span>
+                        </div>
+                        <div class="form-group">
                             <label>Number of Videos *</label>
                             <input type="number" class="quantity-input" data-service="360-exterior" min="0" value="0">
-                            <span class="helper-text">Only in combination with min. 2x 3D-Außenvisualisierung</span>
+                            <span class="helper-text">Price varies by building type</span>
                         </div>
                         <div class="form-group">
                             <label>Description Details (Optional)</label>
@@ -1275,22 +1358,55 @@
 
         // Pricing tiers
         const pricing = {
-            'exterior-ground': (qty) => {
+            'exterior-ground': (qty, buildingType) => {
                 if (qty === 0) return 0;
-                if (qty === 1) return 20;
-                if (qty === 2) return 18;
-                if (qty === 3) return 16;
-                if (qty === 4) return 14;
-                return 12; // 5+
+                if (!buildingType) return 0;
+                
+                // Pricing matrix: [1x, 2x, 3x, 4x, 5x+]
+                const priceMatrix = {
+                    'EFH': [499, 349, 299, 229, 199],
+                    'DHH': [599, 399, 359, 329, 299],
+                    'MFH-6-10': [699, 499, 399, 349, 329],
+                    'MFH-11-15': [799, 599, 499, 399, 349]
+                };
+                
+                const prices = priceMatrix[buildingType] || [0, 0, 0, 0, 0];
+                if (qty <= 5) return prices[qty - 1];
+                return prices[4]; // 5+
             },
             'exterior-bird': () => 12,
-            '3d-floorplan': () => 69,
+            '3d-floorplan': (projectType, areaSize) => {
+                if (projectType === 'commercial') {
+                    const commercialPrices = { '100': 99, '250': 199, '500': 299, '1000': 399, '1500': 499 };
+                    return commercialPrices[areaSize] || 0;
+                }
+                return 69; // Residential
+            },
             '3d-complete-floor': () => 199,
-            '2d-floorplan': () => 49,
+            '2d-floorplan': (projectType, areaSize) => {
+                if (projectType === 'commercial') {
+                    const commercialPrices = { '100': 39, '250': 79, '500': 119, '1000': 159, '1500': 199 };
+                    return commercialPrices[areaSize] || 0;
+                }
+                return 49; // Residential
+            },
             'home-staging': () => 99,
             'renovation': () => 139,
-            '360-interior': () => 599,
-            '360-exterior': () => 0, // Price on request
+            '360-interior': (apartmentSize) => {
+                if (!apartmentSize) return 0;
+                const prices = {
+                    '30': 999, '40': 1299, '50': 1499, '60': 1699,
+                    '70': 1799, '80': 1899, '90': 1999, '100': 2299, 'EFH': 2499
+                };
+                return prices[apartmentSize] || 0;
+            },
+            '360-exterior': (buildingType) => {
+                if (!buildingType) return 0;
+                const prices = {
+                    'EFH-DHH': 1299, 'MFH-3-5': 1299, 'MFH-6-10': 1699, 'MFH-11-15': 1999
+                };
+                return prices[buildingType] || 0;
+            },
             'slideshow': () => 499,
             'site-plan': () => 99,
             'social-media': () => 299,
@@ -1335,6 +1451,22 @@
             });
         });
 
+        // Update calculations on building type/apartment size/project type/area size change
+        document.querySelectorAll('.building-type-input, .apartment-size-input, .project-type-input, .area-size-input').forEach(select => {
+            select.addEventListener('change', function() {
+                // Show/hide commercial area size fields
+                if (this.classList.contains('project-type-input')) {
+                    const service = this.dataset.service;
+                    const commercialField = document.querySelector(`.commercial-only[data-service="${service}"]`);
+                    if (commercialField) {
+                        commercialField.style.display = this.value === 'commercial' ? 'block' : 'none';
+                    }
+                }
+                updateCalculations();
+                saveFormData();
+            });
+        });
+
         // Add auto-save to all input fields
         document.querySelectorAll('input, select, textarea').forEach(field => {
             field.addEventListener('change', saveFormData);
@@ -1351,7 +1483,25 @@
                 if (priceFunc) {
                     let unitPrice, serviceTotal;
                     
-                    if (service === 'exterior-ground' || service === 'interior') {
+                    // Get additional parameters based on service type
+                    if (service === 'exterior-ground') {
+                        const buildingType = document.querySelector(`.building-type-input[data-service="${service}"]`)?.value;
+                        unitPrice = priceFunc(quantity, buildingType);
+                        serviceTotal = unitPrice * quantity;
+                    } else if (service === '360-interior') {
+                        const apartmentSize = document.querySelector(`.apartment-size-input[data-service="${service}"]`)?.value;
+                        unitPrice = priceFunc(apartmentSize);
+                        serviceTotal = unitPrice * quantity;
+                    } else if (service === '360-exterior') {
+                        const buildingType = document.querySelector(`.building-type-input[data-service="${service}"]`)?.value;
+                        unitPrice = priceFunc(buildingType);
+                        serviceTotal = unitPrice * quantity;
+                    } else if (service === '3d-floorplan' || service === '2d-floorplan') {
+                        const projectType = document.querySelector(`.project-type-input[data-service="${service}"]`)?.value;
+                        const areaSize = document.querySelector(`.area-size-input[data-service="${service}"]`)?.value;
+                        unitPrice = priceFunc(projectType, areaSize);
+                        serviceTotal = unitPrice * quantity;
+                    } else if (service === 'interior') {
                         unitPrice = priceFunc(quantity);
                         serviceTotal = unitPrice * quantity;
                     } else {
@@ -1877,7 +2027,25 @@
                     const priceFunc = pricing[service];
                     let unitPrice, serviceTotal;
                     
-                    if (service === 'exterior-ground' || service === 'interior') {
+                    // Get additional parameters based on service type
+                    if (service === 'exterior-ground') {
+                        const buildingType = item.querySelector('.building-type-input')?.value;
+                        unitPrice = priceFunc(quantity, buildingType);
+                        serviceTotal = unitPrice * quantity;
+                    } else if (service === '360-interior') {
+                        const apartmentSize = item.querySelector('.apartment-size-input')?.value;
+                        unitPrice = priceFunc(apartmentSize);
+                        serviceTotal = unitPrice * quantity;
+                    } else if (service === '360-exterior') {
+                        const buildingType = item.querySelector('.building-type-input')?.value;
+                        unitPrice = priceFunc(buildingType);
+                        serviceTotal = unitPrice * quantity;
+                    } else if (service === '3d-floorplan' || service === '2d-floorplan') {
+                        const projectType = item.querySelector('.project-type-input')?.value;
+                        const areaSize = item.querySelector('.area-size-input')?.value;
+                        unitPrice = priceFunc(projectType, areaSize);
+                        serviceTotal = unitPrice * quantity;
+                    } else if (service === 'interior') {
                         unitPrice = priceFunc(quantity);
                         serviceTotal = unitPrice * quantity;
                     } else {
@@ -1893,6 +2061,20 @@
                         unitPrice: formatPriceForJSON(unitPrice),
                         totalPrice: formatPriceForJSON(serviceTotal)
                     };
+                    
+                    // Add additional parameters to serviceData
+                    if (service === 'exterior-ground' || service === '360-exterior') {
+                        const buildingType = item.querySelector('.building-type-input')?.value;
+                        if (buildingType) serviceData.buildingType = buildingType;
+                    } else if (service === '360-interior') {
+                        const apartmentSize = item.querySelector('.apartment-size-input')?.value;
+                        if (apartmentSize) serviceData.apartmentSize = apartmentSize;
+                    } else if (service === '3d-floorplan' || service === '2d-floorplan') {
+                        const projectType = item.querySelector('.project-type-input')?.value;
+                        const areaSize = item.querySelector('.area-size-input')?.value;
+                        if (projectType) serviceData.projectType = projectType;
+                        if (areaSize) serviceData.areaSize = areaSize;
+                    }
                     
                     // Add custom description if provided
                     if (descriptionArray && descriptionArray.length > 0) {
@@ -2238,27 +2420,42 @@
         oneWeekLater.setDate(oneWeekLater.getDate() + CONFIG.offerValidityDays);
         document.getElementById('offerValidUntil').valueAsDate = oneWeekLater;
 
-        // Handle client number lookup
-        document.getElementById('clientNumber').addEventListener('input', async function(e) {
-            const clientNumber = e.target.value.trim();
+        // Handle client number lookup via button click
+        document.getElementById('fetchClientBtn').addEventListener('click', async function(e) {
+            const clientNumberInput = document.getElementById('clientNumber');
+            const clientNumber = clientNumberInput.value.trim();
+            const button = e.target;
             
             // Remove any existing indicators
-            const existingIndicators = e.target.parentElement.querySelectorAll('span[style*="color"]');
+            const parentDiv = clientNumberInput.parentElement.parentElement;
+            const existingIndicators = parentDiv.querySelectorAll('.lookup-indicator');
             existingIndicators.forEach(ind => ind.remove());
             
-            if (!clientNumber) return;
+            if (!clientNumber) {
+                const indicator = document.createElement('span');
+                indicator.className = 'lookup-indicator helper-text';
+                indicator.style.color = 'red';
+                indicator.textContent = '⚠ Please enter a client number';
+                parentDiv.appendChild(indicator);
+                setTimeout(() => indicator.remove(), 3000);
+                return;
+            }
             
             // Validate that client number is exactly 5 digits
             if (!/^\d{5}$/.test(clientNumber)) {
                 const indicator = document.createElement('span');
+                indicator.className = 'lookup-indicator helper-text';
                 indicator.style.color = 'red';
-                indicator.style.marginLeft = '10px';
-                indicator.style.fontSize = '12px';
                 indicator.textContent = '⚠ Client number must be 5 digits';
-                e.target.parentElement.appendChild(indicator);
+                parentDiv.appendChild(indicator);
                 setTimeout(() => indicator.remove(), 3000);
                 return;
             }
+            
+            // Show loading state
+            button.disabled = true;
+            button.style.opacity = '0.6';
+            button.textContent = '⏳';
             
             console.log('Looking up client number:', clientNumber);
             
@@ -2278,26 +2475,55 @@
                         
                         // Show success indicator with company name
                         const indicator = document.createElement('span');
+                        indicator.className = 'lookup-indicator helper-text';
                         indicator.style.color = 'green';
-                        indicator.style.marginLeft = '10px';
                         indicator.textContent = '✓ ' + (client.company_name || 'Client found');
-                        e.target.parentElement.appendChild(indicator);
+                        parentDiv.appendChild(indicator);
                         setTimeout(() => indicator.remove(), 3000);
+                        
+                        // Visual feedback on button
+                        button.style.background = '#28a745';
+                        setTimeout(() => {
+                            button.style.background = '#1a2a4a';
+                        }, 1000);
                     } else {
                         console.log('Client not found');
                         // Show not found indicator
                         const indicator = document.createElement('span');
+                        indicator.className = 'lookup-indicator helper-text';
                         indicator.style.color = 'orange';
-                        indicator.style.marginLeft = '10px';
-                        indicator.textContent = '⚠ Client not found';
-                        e.target.parentElement.appendChild(indicator);
+                        indicator.textContent = '⚠ Client not found in database';
+                        parentDiv.appendChild(indicator);
                         setTimeout(() => indicator.remove(), 3000);
+                        
+                        // Visual feedback on button
+                        button.style.background = '#dc3545';
+                        setTimeout(() => {
+                            button.style.background = '#1a2a4a';
+                        }, 1000);
                     }
                 } else {
                     console.error('Error fetching client data:', response.statusText);
+                    const indicator = document.createElement('span');
+                    indicator.className = 'lookup-indicator helper-text';
+                    indicator.style.color = 'red';
+                    indicator.textContent = '⚠ Error connecting to database';
+                    parentDiv.appendChild(indicator);
+                    setTimeout(() => indicator.remove(), 3000);
                 }
             } catch (error) {
                 console.error('Error looking up client:', error);
+                const indicator = document.createElement('span');
+                indicator.className = 'lookup-indicator helper-text';
+                indicator.style.color = 'red';
+                indicator.textContent = '⚠ Connection error';
+                parentDiv.appendChild(indicator);
+                setTimeout(() => indicator.remove(), 3000);
+            } finally {
+                // Reset button state
+                button.disabled = false;
+                button.style.opacity = '1';
+                button.textContent = '✓';
             }
         });
 
