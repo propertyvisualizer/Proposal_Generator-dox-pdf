@@ -176,7 +176,7 @@ app.post('/api/generate-proposal', async (req, res) => {
     }
     
     // Generate filename: YYMMDD_Angebot_CompanyName ExposéProfi
-    const YY = projectInfo.date ? projectInfo.date.split('.')[2].slice(-2) : '25';
+    const YY = projectInfo.date ? projectInfo.date.split('.')[2].slice(-2) : '26';
     const MM = projectInfo.MM || '01';
     const DD = projectInfo.DD || '01';
     const safeCompanyName = clientInfo.companyName

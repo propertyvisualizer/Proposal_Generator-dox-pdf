@@ -16,10 +16,10 @@ class PureDocxProposalGenerator {
       postalCode: data.postalCode || 'PLZ',
       city: data.city || 'Ort',
       country: data.country || 'Deutschland',
-      date: data.date || 'XX.XX.2025',
+      date: data.date || 'XX.XX.2026',
       MM: data.MM || 'MM',
       DD: data.DD || 'DD',
-      offerValidUntil: data.offerValidUntil || 'XX.XX.25',
+      offerValidUntil: data.offerValidUntil || 'XX.XX.26',
       deliveryDays: data.deliveryDays || 'XXX',
       totalNetPrice: data.totalNetPrice || '0,00',
       totalVat: data.totalVat || '0,00',
@@ -29,7 +29,7 @@ class PureDocxProposalGenerator {
       services: data.services || [],
       discount: data.discount || null,
     };
-    this.offerNumber = `2025-${this.data.MM}-${this.data.DD}-8`; // Changed from -1 to -8
+    this.offerNumber = data.offerNumber || `2026-${this.data.MM}-${this.data.DD}-8`; // Uses provided number or defaults to -8 logic
     
     // Use imported serviceDescriptions instead of local definition
     this.serviceDescriptions = serviceDescriptions;
@@ -288,8 +288,8 @@ class PureDocxProposalGenerator {
       { title: 'Fotorealismus:', text: 'Wir erstellen ausschließlich emotionale 3D-Visualisierungen der höchsten Qualitätsstufe.' },
       { title: 'Persönliche & individuelle Betreuung:', text: 'Sie erhalten bei jedem Projekt die Unterstützung von einem persönlichen Ansprechpartner, der die Visualisierungen individuell für Sie erstellt und immer per Telefon oder Email erreichbar ist.' },
       { title: 'Effiziente Prozesse & Schnelle Lieferzeit:', text: 'Wie Sie sehen, melden wir uns innerhalb von 24h mit einem Angebot bei Ihnen. Ihr Projekt verläuft ab Start ebenso reibungslos und Sie erhalten die Visualisierungen schnellstmöglich. Gänzlich ohne Kopfschmerzen.' },
-      { title: 'Korrekturschleifen:', text: 'Bei 50% unserer Projekte benötigen unsere Kunden keine einzige Korrekturschleife, da wir von vorneherein ihre Wünsche perfekt umsetzen. Falls Sie dennoch Änderungswünsche haben sollten, bieten wir Ihnen ein eigenes Tool, bei dem Sie bequem innerhalb der Visualisierungen an die entsprechenden Stellen klicken und kommentieren können, was Sie geändert haben möchten. Hieraus ergibt sich für Sie eine Zeitersparnis verglichen mit Änderungswünschen per Email oder Telefon. Zudem gibt es durch unser Tool keine Missverständnisse bei der Umsetzung, wodurch Sie die finalen Visualisierungen noch schneller erhalten und das Projekt ganz reibungslos und stressfrei verläuft.' },
-      { title: 'Preiswert:', text: 'Aufgrund unserer effizienten Prozesse bieten wir günstigere Preise als andere Anbieter mit vergleichbar hoher Qualität und zugleich eine bessere Betreuung.' },
+      { title: 'Korrekturschleifen:', text: 'Bei 50% unserer Projekte benötigen unsere Kunden keine einzige Korrekturschleife, da wir von vornerein Ihre Wünsche perfekt umsetzen. Falls Sie dennoch Änderungswünsche haben sollten, bieten wir Ihnen ein eigenes Tool, bei dem Sie bequem innerhalb der Visualisierungen an die entsprechenden Stellen klicken und kommentieren können, was Sie geändert haben möchten. Hieraus ergibt sich für Sie eine Zeitersparnis verglichen mit Änderungswünschen per Email oder Telefon. Zudem gibt es durch unser Tool keine Missverständnisse bei der Umsetzung, wodurch Sie die finalen Visualisierungen noch schneller erhalten und das Projekt ganz reibungslos und stressfrei verläuft.' },
+      { title: 'Preiswert:', text: 'Aufgrund unserer effizienten Prozesse bieten wir günstigere Preise als andere Anbieter mit vergleichbar hoher Qualität und zudem eine bessere Betreuung.' },
     ];
 
     return benefits.map((benefit, index) => 
@@ -1312,6 +1312,18 @@ class PureDocxProposalGenerator {
   }
 
   /**
+   * Check if exterior rendering is ordered
+   */
+  hasExteriorService() {
+    return this.data.services.some(service => 
+      service.name && (
+        service.name.toLowerCase().includes('außen') || 
+        service.name.toLowerCase().includes('exterior')
+      )
+    );
+  }
+
+  /**
    * Check if virtual tour is ordered
    */
   hasVirtualTour() {
@@ -1325,35 +1337,43 @@ class PureDocxProposalGenerator {
   }
 
   /**
-   * Create delivery conditions based on virtual tour
+   * Create delivery conditions based on virtual tour and price
    */
   createDeliveryConditions() {
-    const hasVirtualTour = this.hasVirtualTour();
+    // Parse total net price to number
+    let netPrice = 0;
+    if (this.data.totalNetPrice) {
+      netPrice = parseFloat(String(this.data.totalNetPrice).replace(/\./g, '').replace(',', '.'));
+    }
+
+    const deliveryDays = this.data.deliveryDays || 'XXX';
     
-    const deliveryText = hasVirtualTour
-      ? 'Die Lieferung der Bilder und des virtuellen Rundgangs erfolgt per WeTransfer an eine von Ihnen genannte E-Mail-Adresse. Die Lieferung erfolgt spätestens zum genannten Liefertermin.'
-      : 'Die Lieferung der Bilder erfolgt per WeTransfer an eine von Ihnen genannte E-Mail-Adresse. Die Lieferung erfolgt spätestens zum genannten Liefertermin.';
+    // Logic for delivery date text
+    let deliveryDateText;
+    if (netPrice < 2000) {
+      deliveryDateText = `*Voraussichtl. Leistungsdatum: ${deliveryDays} Arbeitstage nach Auftragseingang und Erhalt aller Unterlagen und Informationen`;
+    } else {
+      const grossPrice = this.data.totalGrossPrice || '0,00';
+      // Calculate 50% of gross
+      const grossNum = parseFloat(String(grossPrice).replace(/\./g, '').replace(',', '.'));
+      const halfGross = (grossNum * 0.5);
+      const halfGrossFormatted = this.formatPrice(halfGross);
+      
+      deliveryDateText = `*Voraussichtl. Leistungsdatum: ${deliveryDays} Arbeitstage nach Eingang der Anzahlung i.H.v. 50% des Bruttopreises (${halfGrossFormatted} EUR) und Erhalt aller Unterlagen und Informationen`;
+    }
     
     return [
       new Paragraph({
         spacing: { after: 120 },
         children: [
           new TextRun({ text: 'Lieferweg: ', bold: true, size: 20 }),
-          new TextRun({ text: deliveryText, size: 20 }),
+          new TextRun({ text: 'Digital via Email', size: 20 }),
         ],
       }),
       new Paragraph({
         spacing: { after: 120 },
         children: [
-          new TextRun({ text: 'Lieferzeit: ', bold: true, size: 20 }),
-          new TextRun({ text: `${this.data.deliveryDays} Werktage ab Beauftragung und Erhalt der Unterlagen`, size: 20 }),
-        ],
-      }),
-      new Paragraph({
-        spacing: { after: 150 },
-        children: [
-          new TextRun({ text: 'Zahlungsbedingungen: ', bold: true, size: 20 }),
-          new TextRun({ text: '50% Anzahlung, Rest nach Lieferung - innerhalb 14 Tage netto', size: 20 }),
+          new TextRun({ text: deliveryDateText, size: 20 }),
         ],
       }),
     ];
@@ -1373,8 +1393,8 @@ class PureDocxProposalGenerator {
       new Paragraph({
         spacing: { before: 100, after: 100 },
         children: [
-          new TextRun({ text: '⁽²⁾ ', bold: true, size: 18 }),
-          new TextRun({ text: 'Das Hosting des virtuellen Rundgangs ist in den ersten 12 Monaten inklusive. Nach Ablauf dieser Zeit stellen wir Ihnen die Hostinggebühren in Höhe von 5 Euro netto pro Objekt und Monat in Rechnung.', size: 17 })
+          new TextRun({ text: '(2): ', bold: true, size: 18 }),
+          new TextRun({ text: 'Sollten Sie nach 12 Monaten die Tour immer noch benutzen möchten, können Sie gerne eine Verlängerung des Hostings um weitere 12 Monate optional für 50,00 € beauftragen.', size: 17 })
         ],
       }),
     ];
@@ -1389,8 +1409,8 @@ class PureDocxProposalGenerator {
       new Paragraph({
         spacing: { before: 200, after: 150 },
         children: [
-          new TextRun({ text: 'Dieses Angebot ist gültig bis: ', bold: true, size: 22 }),
-          new TextRun({ text: this.data.offerValidUntil, bold: true, size: 22 }),
+          new TextRun({ text: 'Dieses Angebot ist gültig bis ', bold: true, size: 22 }),
+          new TextRun({ text: this.data.offerValidUntil + '.', bold: true, size: 22 }),
         ],
       }),
       
@@ -1401,15 +1421,19 @@ class PureDocxProposalGenerator {
       new Paragraph({
         spacing: { before: 300, after: 400 },
         children: [
-          new TextRun({ text: 'Mit freundlichen Grüßen\n', italics: true, size: 20 }),
-          new TextRun({ text: this.data.signatureName, italics: true, size: 20 }),
+          new TextRun({ text: 'Mit freundlichen Grüßen\n', size: 20 }),
+          new TextRun({ text: 'Christopher Helm', size: 20 }),
         ],
       }),
       
       // Footnote (1)
       new Paragraph({
         spacing: { before: 200, after: 100 },
-        children: [new TextRun({ text: '⁽¹⁾ ', bold: true, size: 18 }), new TextRun({ text: 'Sollten sich nach Beauftragung Änderungswünsche ergeben, stellen wir Ihnen gerne zwei Revisionsdurchläufe kostenfrei zur Verfügung. Weitere Revisionen werden Ihnen mit einem Aufschlag von 30 % auf den Grundpreis in Rechnung gestellt.', size: 17 })],
+        alignment: AlignmentType.JUSTIFIED,
+        children: [
+          new TextRun({ text: '(1): ', bold: true, size: 18 }), 
+          new TextRun({ text: 'Sollten Sie danach eine weitere Revision benötigen, die nicht durch uns verschuldet wurde, führen wir diese gerne für 50% des Nettopreises pro Visualisierung durch. Unsere effizienten Prozesse und die sehr hohe Qualität führen jedoch dazu, dass eine einzige Revision meist genügt: In hunderten von Projekten benötigen unsere Kunden nur in 6 % aller Fälle eine zusätzliche Revision und auch nur dann, wenn sich nachträglich die Pläne drastisch geändert haben. Je nach Umfang dauert eine Revision mind. 50% der ursprünglichen Lieferzeit.', size: 17 })
+        ],
       }),
       
       // Footnote (2) - only if virtual tour is ordered
@@ -1427,9 +1451,53 @@ class PureDocxProposalGenerator {
         spacing: { after: 200 },
         alignment: AlignmentType.JUSTIFIED,
         children: [new TextRun({ 
-          text: 'Wir sind stets bestrebt, Ihre Visualisierungen so detailgetreu zu erstellen. Jeder dienen dieser Visualisierungen sind Künstlerische Schöpfungen welche subjektiven Haftung. Schäden auf Grund von Abweichungen hiernach.', 
+          text: 'Wir sind stets bestrebt, Ihre Visualisierungen so detailgetreu wie möglich zu erstellen. Jedoch dienen die Visualisierungen nur der Veranschaulichung. Folglich wird keine Haftung für eventuelle Schäden auf Grund von Abweichungen übernommen.', 
           size: 17 
         })],
+      }),
+
+      // Nutzungsrecht
+      new Paragraph({
+        spacing: { after: 100 },
+        children: [new TextRun({ text: 'Nutzungsrecht:', bold: true, size: 18 })],
+      }),
+      new Paragraph({
+        spacing: { after: 200 },
+        alignment: AlignmentType.JUSTIFIED,
+        children: [new TextRun({ text: 'Die Nutzung der durch uns erstellten Visualisierungen ist erst nach Zahlung gestattet.', size: 17 })],
+      }),
+
+      // AGB
+      new Paragraph({
+        spacing: { after: 200 },
+        alignment: AlignmentType.JUSTIFIED,
+        children: [
+          new TextRun({ text: 'Es gelten unsere allgemeinen Verkaufs- und Lieferbedingungen. Die gültige Version der allgemeinen Verkaufs- und Lieferbedingungen Stand 03/2023 finden Sie auf der Website: ', size: 17 }),
+          new ExternalHyperlink({
+            children: [
+              new TextRun({
+                text: 'https://www.exposeprofi.de/agb',
+                size: 17,
+                color: '0066cc',
+                underline: {},
+              }),
+            ],
+            link: 'https://www.exposeprofi.de/agb',
+          }),
+          new TextRun({ text: '. Außerdem auf Anforderung erhältlich.', size: 17 }),
+        ],
+      }),
+
+      // Rechnung
+      new Paragraph({
+        spacing: { after: 100, before: 100 },
+        alignment: AlignmentType.JUSTIFIED,
+        children: [new TextRun({ text: 'Nach der ersten vollständigen Lieferung aller bestellten Produkte wird das Projekt in Rechnung gestellt. Die im Angebot inbegriffene kostenlose Revision können Sie jederzeit in Anspruch nehmen.', size: 17 })],
+      }),
+      new Paragraph({
+        spacing: { after: 200 },
+        alignment: AlignmentType.JUSTIFIED,
+        children: [new TextRun({ text: 'Sollte die Erstellung der bestellten Produkte aus Gründen, die nicht von uns zu vertreten sind (z. B. fehlende Kundenzuarbeit), für einen Zeitraum von mindestens 30 Tagen unterbrochen werden, können wir das Projekt in Rechnung stellen. Die Produkte werden selbstverständlich geliefert.', size: 17 })],
       }),
     ];
   }
@@ -1479,8 +1547,8 @@ class PureDocxProposalGenerator {
         ],
       },
       
-      // SECTION 4: PAGE 6 (Second-to-last) - Perspective Images (only if images exist)
-      ...(this.data.images && this.data.images.length > 0 ? [{
+      // SECTION 4: PAGE 6 (Second-to-last) - Perspective Images (only if images exist or exterior service ordered)
+      ...((this.data.images && this.data.images.length > 0) || this.hasExteriorService() ? [{
         properties: this.getStandardPageProperties(),
         footers: { default: this.createFooter() },
         children: [

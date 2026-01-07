@@ -1,4 +1,4 @@
-# Preise 2025
+# Preise 2026
 
 ## Residential
 
