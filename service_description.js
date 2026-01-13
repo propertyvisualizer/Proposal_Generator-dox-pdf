@@ -17,6 +17,7 @@ refferences = [
 const serviceDescriptions = {
   'exterior-ground': {
     name: '3D-Außenvisualisierung Bodenperspektive',
+    link: 'https://www.exposeprofi.de/3d-visualisierungen/architekturvisualisierungen',
     description: [
       'Geliefert werden XXX gerenderte Außenansichten des Objektes „XXX" aus den folgenden Bodenperspektiven (siehe rote Pfeile):',
       '○ xxx',
@@ -36,6 +37,7 @@ const serviceDescriptions = {
   },
   'exterior-bird': {
     name: '3D-Außenvisualisierung Vogelperspektive',
+    link: 'https://www.exposeprofi.de/3d-visualisierungen/architekturvisualisierungen',
     description: [
       'Geliefert wird 1x gerenderte Außenansicht des Objektes „XXX" aus der folgenden Vogelperspektive (siehe blauen Pfeil):',
       '○ xxx',
@@ -56,6 +58,7 @@ const serviceDescriptions = {
   },
   'interior': {
     name: '3D-Innenvisualisierung',
+    link: 'https://www.exposeprofi.de/3d-visualisierungen/innenvisualisierungen',
     description: [
       'Geliefert werden XX gerenderte Innenansichten der Räume:',
       '○ …',
@@ -67,16 +70,16 @@ const serviceDescriptions = {
       'Referenzen: KLICK'
     ],
     pricingTiers: [
-      { quantity: 1, price: 399.00, label: '1 Ansicht Netto: 399,00 €' },
-      { quantity: 2, price: 299.00, label: '2 Ansichten: Netto pro Ansicht: 299,00 €' },
-      { quantity: 3, price: 289.00, label: '3 Ansichten: Netto pro Ansicht: 289,00 €' },
-      { quantity: 4, price: 269.00, label: '4 Ansichten: Netto pro Ansicht: 269,00 €' },
-      { quantity: 5, price: 259.00, label: '5 Ansichten: Netto pro Ansicht: 259,00 €' },
-      { quantity: 6, price: 249.00, label: '6 Ansichten: Netto pro Ansicht: 249,00 €' },
-      { quantity: 7, price: 239.00, label: '7 Ansichten: Netto pro Ansicht: 239,00 €' },
-      { quantity: 8, price: 229.00, label: '8 Ansichten: Netto pro Ansicht: 229,00 €' },
-      { quantity: 9, price: 219.00, label: '9 Ansichten: Netto pro Ansicht: 219,00 €' },
-      { quantity: 10, price: 199.00, label: '>=10 Ansichten: Netto pro Ansicht: 199,00 €' }
+      { quantity: 1, price: 399, label: '1 Ansicht Netto: 399,00 €' },
+      { quantity: 2, price: 299, label: '2 Ansichten: Netto pro Ansicht: 299,00 €' },
+      { quantity: 3, price: 289, label: '3 Ansichten: Netto pro Ansicht: 289,00 €' },
+      { quantity: 4, price: 269, label: '4 Ansichten: Netto pro Ansicht: 269,00 €' },
+      { quantity: 5, price: 259, label: '5 Ansichten: Netto pro Ansicht: 259,00 €' },
+      { quantity: 6, price: 249, label: '6 Ansichten: Netto pro Ansicht: 249,00 €' },
+      { quantity: 7, price: 239, label: '7 Ansichten: Netto pro Ansicht: 239,00 €' },
+      { quantity: 8, price: 229, label: '8 Ansichten: Netto pro Ansicht: 229,00 €' },
+      { quantity: 9, price: 219, label: '9 Ansichten: Netto pro Ansicht: 219,00 €' },
+      { quantity: 10, price: 199, label: '≥10 Ansichten: Netto pro Ansicht: 199,00 €' }
     ]
   },
   'terrace': {
@@ -93,6 +96,7 @@ const serviceDescriptions = {
   '3d-floorplan': {
     name: '3D-Grundriss',
     defaultPrice: 69.00,
+    link: 'https://www.exposeprofi.de/3d-visualisierungen/3d-grundrisse',
     description: [
       'Geliefert werden XXX 3D-Grundrisse',
       'Hochwertig standardmöbliert',
@@ -117,6 +121,7 @@ const serviceDescriptions = {
   '2d-floorplan': {
     name: '2D-Grundriss',
     defaultPrice: 49.00,
+    link: 'https://www.exposeprofi.de/workflow/2d-grundriss-designs',
     description: [
       'Geliefert werden XXX 2D-Grundrisse',
       'Hochwertig standardmöbliert',
@@ -129,6 +134,7 @@ const serviceDescriptions = {
   'home-staging': {
     name: 'Digital Home Staging',
     defaultPrice: 99.00,
+    link: 'https://www.exposeprofi.de/digitales-home-staging',
     description: [
       'Geliefert werden XXX Digital Home Staging Fotos der Räume:',
       '○ text',
@@ -143,6 +149,7 @@ const serviceDescriptions = {
   'renovation': {
     name: 'Digitale Renovierung',
     defaultPrice: 139.00,
+    link: 'https://www.exposeprofi.de/digitales-home-staging#referenzen-virtuelle-renovierung',
     description: [
       'Geliefert werden XXX Digitale Renovierungsfotos der Räume:',
       '○ text',
@@ -157,6 +164,7 @@ const serviceDescriptions = {
   '360-interior': {
     name: '360° Tour Innen',
     defaultPrice: 599.00,
+    link: 'https://www.exposeprofi.de/3d-visualisierungen/virtuelle-rundgaenge',
     description: [
       'Geliefert wird 1x 360° Tour folgender Wohneinheit:',
       '○ text',
@@ -173,6 +181,7 @@ const serviceDescriptions = {
   },
   '360-exterior': {
     name: '360° Video Außen',
+    link: 'https://www.exposeprofi.de/3d-visualisierungen/architekturvisualisierungen#referenzen-virtueller-videorundgang',
     description: [
       'Geliefert wird 1x 360° Video-Tour des Objektes XXX',
       '(nur in Kombination mit mind. 2x 3D-Außenvisualisierung)',
@@ -186,6 +195,7 @@ const serviceDescriptions = {
   'slideshow': {
     name: 'Slideshow Video',
     defaultPrice: 499.00,
+    link: 'https://www.exposeprofi.de/3d-visualisierungen/architekturvisualisierungen#referenzen-virtueller-videorundgang',
     description: [
       'Geliefert wird XX Slideshow-Video des Objektes',
       'Inkl. aller Visualisierungen und weiterer Fotos',
@@ -241,6 +251,7 @@ const serviceDescriptions = {
   'expose-creation': {
     name: 'Exposé-Erstellung',
     defaultPrice: 499.00,
+    link: 'https://www.exposeprofi.de/workflow/exposedesigns',
     description: [
       'Geliefert wird XXX komplettes Exposé für den Vertrieb des Objektes',
       'In druckfertiger, digitaler Ausführung',

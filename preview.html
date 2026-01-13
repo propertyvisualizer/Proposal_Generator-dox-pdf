@@ -1047,7 +1047,16 @@
 
     // Load proposal data from localStorage
     function loadProposalData() {
-      const data = JSON.parse(localStorage.getItem('proposalPreviewData') || '{}');
+      // Try localStorage first, then sessionStorage as fallback
+      let dataStr = localStorage.getItem('proposalPreviewData');
+      if (!dataStr) {
+        dataStr = sessionStorage.getItem('proposalPreviewData');
+        if (dataStr) {
+          console.log('📦 Loaded preview data from sessionStorage (fallback)');
+        }
+      }
+      
+      const data = JSON.parse(dataStr || '{}');
       
       if (!data.clientInfo) {
         alert('No proposal data found. Please fill out the form first.');
@@ -1065,7 +1074,7 @@
       // Populate project info
       document.getElementById('preview-date').textContent = data.projectInfo.date;
       const offerNumberStart = (typeof CONFIG !== 'undefined' && CONFIG.offerNumberStart) ? CONFIG.offerNumberStart : 8;
-      document.getElementById('preview-offerNumber').textContent = `2025-${data.projectInfo.MM}-${data.projectInfo.DD}-${offerNumberStart}`;
+      document.getElementById('preview-offerNumber').textContent = `2026-${data.projectInfo.MM}-${data.projectInfo.DD}-${offerNumberStart}`;
       document.getElementById('preview-validUntil').textContent = formatDate(data.projectInfo.offerValidUntil);
       document.getElementById('preview-deliveryDays').textContent = data.projectInfo.deliveryDays;
 
@@ -1824,15 +1833,46 @@
               }
             }
           }
+          
+          // Recalculate subtotal and totals when quantity changes
+          recalculateServicesSubtotal();
         } else if (field === 'unitPrice') {
           const price = parseFloat(newValue) || 0;
           service.unitPrice = price;
           service.customPriceSet = true; // Mark that user manually set the price
+          
+          // Recalculate subtotal and totals when price changes
+          recalculateServicesSubtotal();
         }
         
         // Update localStorage
         localStorage.setItem('proposalData', JSON.stringify(window.proposalData));
         console.log(`Updated ${field} for service ${serviceIndex}:`, newValue);
+      }
+    }
+    
+    // Recalculate subtotal from all services
+    function recalculateServicesSubtotal() {
+      if (!window.proposalData || !window.proposalData.services) return;
+      
+      let subtotal = 0;
+      window.proposalData.services.forEach(service => {
+        const quantity = parseInt(service.quantity) || 0;
+        const price = parseFloat(service.unitPrice) || 0;
+        subtotal += quantity * price;
+      });
+      
+      // Update subtotal display
+      const subtotalElement = document.getElementById('preview-subtotalNet');
+      if (subtotalElement) {
+        subtotalElement.textContent = subtotal.toFixed(2).replace('.', ',') + ' €';
+        
+        // Update proposalData
+        window.proposalData.pricing.subtotalNet = subtotal.toFixed(2).replace('.', ',');
+        window.proposalData.pricing.totalNetPrice = subtotal.toFixed(2).replace('.', ',');
+        
+        // Recalculate totals with discount
+        recalculateTotals();
       }
     }
 
