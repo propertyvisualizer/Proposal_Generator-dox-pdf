@@ -28,6 +28,9 @@ class PureDocxProposalGenerator {
       images: data.images || [],
       services: data.services || [],
       discount: data.discount || null,
+      projectName: data.projectName || null,
+      projectNumber: data.projectNumber || null,
+      unitCount: data.unitCount || null,
     };
     this.offerNumber = data.offerNumber || `2026-${this.data.MM}-${this.data.DD}-8`; // Uses provided number or defaults to -8 logic
     
@@ -450,12 +453,12 @@ class PureDocxProposalGenerator {
               verticalAlign: VerticalAlign.TOP,
               children: [
                 new Paragraph({
-                  children: [new TextRun({ text: service.name, size: 18, bold: true })],
+                  children: [new TextRun({ text: this.getServiceNameWithProjectInfo(service), size: 18, bold: true })],
                 }),
               ],
             }),
             // Column 3: Description (bullet points with sub-bullets)
-            this.createBulletListCell(combinedDescription, 54, link),
+            this.createBulletListCell(combinedDescription, 54, link, service),
             // Column 4: Unit Price
             new TableCell({
               width: { size: 10, type: WidthType.PERCENTAGE },
@@ -552,6 +555,61 @@ class PureDocxProposalGenerator {
   }
 
   /**
+   * Replace placeholders in text with actual data
+   */
+  replacePlaceholders(text, service = null) {
+    if (!text) return text;
+    
+    let result = text;
+    
+    // Replace project name
+    const projectName = this.data.projectName || 'Projekt';
+    result = result.replace(/„XXX"/g, `„${projectName}"`);
+    result = result.replace(/des Objektes XXX/g, `des Objektes ${projectName}`);
+    result = result.replace(/des Objektes "XXX"/g, `des Objektes "${projectName}"`);
+    
+    // Replace quantity if service is provided
+    if (service && service.quantity) {
+      result = result.replace(/^Geliefert werden XXX/, `Geliefert werden ${service.quantity}`);
+      result = result.replace(/^Geliefert wird XXX/, `Geliefert wird ${service.quantity}`);
+      result = result.replace(/Geliefert werden XXX /g, `Geliefert werden ${service.quantity} `);
+      result = result.replace(/Geliefert wird XXX /g, `Geliefert wird ${service.quantity} `);
+    }
+    
+    // Replace unit count placeholders
+    if (this.data.unitCount) {
+      result = result.replace(/XX Wohneinheiten/g, `${this.data.unitCount} Wohneinheiten`);
+      result = result.replace(/\(Projekt mit XX Wohneinheiten\)/g, `(Projekt mit ${this.data.unitCount} Wohneinheiten)`);
+    }
+    
+    // Replace lowercase xxx with project-related info or remove
+    result = result.replace(/^○ xxx$/gm, '○ (Details siehe Perspektivbilder)');
+    result = result.replace(/^○ text$/gm, '○ (Details siehe Projektunterlagen)');
+    result = result.replace(/^XXX$/gm, '(Details siehe Projektunterlagen)');
+    
+    return result;
+  }
+
+  /**
+   * Get service name with project information appended if needed
+   */
+  getServiceNameWithProjectInfo(service) {
+    let serviceName = service.name;
+    
+    // For exterior services, add project info if unit count is available
+    if ((serviceName.includes('Außenvisualisierung') || serviceName.includes('Exterior')) && this.data.unitCount) {
+      if (!serviceName.includes('Wohneinheiten')) {
+        serviceName += `\n(Projekt mit ${this.data.unitCount} Wohneinheiten)`;
+      }
+    }
+    
+    // Replace any XXX in the service name itself
+    serviceName = this.replacePlaceholders(serviceName, service);
+    
+    return serviceName;
+  }
+
+  /**
    * Create a standard table cell with borders
    */
   createTableCell(text, options = {}) {
@@ -583,7 +641,7 @@ class PureDocxProposalGenerator {
   /**
    * Create bullet list cell with optional hyperlink support and sub-bullets
    */
-  createBulletListCell(items, width = 54, linkUrl = null) {
+  createBulletListCell(items, width = 54, linkUrl = null, service = null) {
     let currentLinkUrl = linkUrl;
     const paragraphs = [];
     
@@ -591,7 +649,7 @@ class PureDocxProposalGenerator {
       // Handle nested structure (item with children/sub-bullets)
       if (typeof item === 'object' && item !== null && item.text) {
         // Main bullet
-        const mainText = item.text;
+        const mainText = this.replacePlaceholders(item.text, service);
         
         // Check for link markers in main text
         if (mainText.includes('Referenzen: Klick') || mainText.includes('Referenz: Klick')) {
@@ -639,11 +697,12 @@ class PureDocxProposalGenerator {
         // Add sub-bullets if they exist
         if (item.children && Array.isArray(item.children)) {
           item.children.forEach(subItem => {
+            const subText = this.replacePlaceholders(subItem, service);
             paragraphs.push(
               new Paragraph({
                 bullet: { level: 1 }, // Level 1 for sub-bullets
                 spacing: { after: 80 },
-                children: [new TextRun({ text: subItem, size: 18 })],
+                children: [new TextRun({ text: subText, size: 18 })],
               })
             );
           });
@@ -651,11 +710,12 @@ class PureDocxProposalGenerator {
       } 
       // Handle string items (regular bullets)
       else if (typeof item === 'string') {
+        const itemText = this.replacePlaceholders(item, service);
         // Check if item contains a link marker
-        if (item.includes('Referenzen: Klick') || item.includes('Referenz: Klick')) {
-          const isPlural = item.includes('Referenzen: Klick');
+        if (itemText.includes('Referenzen: Klick') || itemText.includes('Referenz: Klick')) {
+          const isPlural = itemText.includes('Referenzen: Klick');
           const splitText = isPlural ? 'Referenzen: ' : 'Referenz: ';
-          const parts = item.split(splitText);
+          const parts = itemText.split(splitText);
           
           const children = [new TextRun({ text: parts[0] + splitText, size: 18 })];
           
@@ -689,7 +749,7 @@ class PureDocxProposalGenerator {
             new Paragraph({
               bullet: { level: 0 },
               spacing: { after: 80 },
-              children: [new TextRun({ text: item, size: 18 })],
+              children: [new TextRun({ text: itemText, size: 18 })],
             })
           );
         }
@@ -1628,10 +1688,10 @@ if (require.main === module) {
     street: 'Musterstraße 123',
     postalCode: '12345',
     city: 'Berlin',
-    date: '05.11.2025',
-    MM: '11',
+    date: '05.01.2026',
+    MM: '01',
     DD: '05',
-    offerValidUntil: '19.11.25',
+    offerValidUntil: '19.01.26',
     deliveryDays: '14',
     totalNetPrice: '1.500,00',
     totalVat: '285,00',

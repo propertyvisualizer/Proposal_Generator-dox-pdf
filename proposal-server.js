@@ -6,7 +6,7 @@ const fs = require('fs');
 const axios = require('axios');
 const { PureDocxProposalGenerator } = require('./pure-docx-generator');
 const https = require('https');
-const {getClientDetails, save_proposal_detail} = require('./utils.js')
+const {getClientDetails, save_proposal_detail, getNextOfferNumber} = require('./utils.js')
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -144,8 +144,17 @@ app.post('/api/generate-proposal', async (req, res) => {
       });
     }
     
+    // Calculate proper offer number from database
+    const yearForOffer = projectInfo.date ? projectInfo.date.split('.')[2] : new Date().getFullYear().toString();
+    const mmForOffer = projectInfo.MM || String(new Date().getMonth() + 1).padStart(2, '0');
+    const ddForOffer = projectInfo.DD || String(new Date().getDate()).padStart(2, '0');
+    
+    const generatedOfferNumber = await getNextOfferNumber(yearForOffer, mmForOffer, ddForOffer);
+    console.log('🔢 Generated Offer Number:', generatedOfferNumber);
+
     // Prepare data for DOCX generator
     const docxData = {
+      offerNumber: generatedOfferNumber,
       companyName: clientInfo.companyName,
       street: clientInfo.street,
       postalCode: clientInfo.postalCode,
@@ -163,7 +172,10 @@ app.post('/api/generate-proposal', async (req, res) => {
       discount: pricing.discount || null,
       signatureName: signature?.signatureName || 'Christopher Helm',
       images: images,
-      services: services || []
+      services: services || [],
+      projectName: projectInfo.projectName || null,
+      projectNumber: projectInfo.projectNumber || null,
+      unitCount: projectInfo.unitCount || null
     };
     
     console.log('📄 Generating DOCX with', images.length, 'images');

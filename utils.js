@@ -61,4 +61,42 @@ async function save_proposal_detail(proposalData) {
     }
 }
 
-module.exports = { getClientDetails, save_proposal_detail };
+async function getNextOfferNumber(year, month, day) {
+    const prefix = `${year}-${month}-${day}-`;
+    try {
+        const { data, error } = await db
+            .from('proposals')
+            .select('offer_number')
+            .ilike('offer_number', `${prefix}%`);
+
+        if (error) {
+            console.error('Error fetching offer numbers:', error);
+            return `${prefix}8`;
+        }
+        
+        let maxSuffix = 7; // Start at 7 so the first increment gives 8
+        
+        if (data && data.length > 0) {
+            data.forEach(p => {
+                if (p.offer_number) {
+                    const parts = p.offer_number.split('-');
+                    // Assuming format YYYY-MM-DD-NUMBER
+                    const lastPart = parts[parts.length - 1];
+                    const suffix = parseInt(lastPart, 10);
+                    
+                    if (!isNaN(suffix) && suffix > maxSuffix) {
+                        maxSuffix = suffix;
+                    }
+                }
+            });
+        }
+        
+        return `${prefix}${maxSuffix + 1}`;
+    } catch (err) {
+        console.error('Exception in getNextOfferNumber:', err);
+        // Fallback
+        return `${prefix}8`;
+    }
+}
+
+module.exports = { getClientDetails, save_proposal_detail, getNextOfferNumber };
