@@ -267,7 +267,7 @@ app.post('/api/generate-proposal', async (req, res) => {
       signature: {
         signatureName: signature?.signatureName || 'Christopher Helm'
       },
-      filename: filename,
+      filename: `${clientFolderName}/${filename}`,
       imagesIncluded: images.length
     };
 
@@ -305,7 +305,7 @@ app.post('/api/generate-proposal', async (req, res) => {
     res.json({
       success: true,
       message: 'Proposal generated successfully',
-      filename: filename,
+      filename: `${clientFolderName}/${filename}`,
       fileUrl: `/output/${clientFolderName}/${filename}`,
       filePath: outputPath,
       clientFolder: clientFolderName,
