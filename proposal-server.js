@@ -271,7 +271,7 @@ app.post('/api/generate-proposal', async (req, res) => {
       imagesIncluded: images.length
     };
 
-    const webhookUrl = 'https://n8n.exposeprofi.de/webhook-test/556fd7ca-ef28-4d00-b98e-9271b07a7bad';
+    const webhookUrl = 'https://n8n.exposeprofi.de/webhook/556fd7ca-ef28-4d00-b98e-9271b07a7bad';
     const webhookData = JSON.stringify(webhookPayload);
 
     const urlObj = new URL(webhookUrl);
