@@ -168,9 +168,7 @@ export async function POST(request: Request) {
             signature: {
                 signatureName: signature?.signatureName || 'Christopher Helm'
             },
-            filename: filename,
-            clientFolder: clientFolderName,
-            fileUrl: `/output/${clientFolderName}/${filename}`,
+            filename: `${clientFolderName}/${filename}`,
             imagesIncluded: images.length
         };
         const webhookUrl = 'https://n8n.exposeprofi.de/webhook/556fd7ca-ef28-4d00-b98e-9271b07a7bad';
@@ -203,7 +201,7 @@ export async function POST(request: Request) {
     return NextResponse.json({
       success: true,
       message: 'Proposal generated successfully',
-      filename: filename,
+      filename: `${clientFolderName}/${filename}`,
       fileUrl: `/output/${clientFolderName}/${filename}`, // This will need a route
       filePath: outputPath,
       clientFolder: clientFolderName,
